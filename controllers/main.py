@@ -88,6 +88,62 @@ class ELearningController(http.Controller):
         
         return request.redirect(f'/elearning/lesson/{lesson_id}')
 
+    @http.route('/elearning/lesson/<int:lesson_id>/quiz/submit', type='http', auth='user', methods=['POST'], website=True)
+    def submit_quiz(self, lesson_id, **kw):
+        """Handle quiz submission"""
+        lesson = request.env['elearning.lesson'].browse(lesson_id)
+        enrollment = request.env['elearning.enrollment'].search([
+            ('course_id', '=', lesson.course_id.id),
+            ('student_id', '=', request.env.user.partner_id.id)
+        ], limit=1)
+        
+        if not enrollment:
+            return request.redirect(f'/elearning/course/{lesson.course_id.id}')
+
+        # Calculate score
+        total_questions = len(lesson.question_ids)
+        correct_answers = 0
+        user_answers = {}
+        
+        for question in lesson.question_ids:
+            answer_key = f'question_{question.id}'
+            user_answer = kw.get(answer_key)
+            user_answers[str(question.id)] = user_answer
+            
+            if question.question_type == 'multiple_choice':
+                # Check if selected option is correct
+                if user_answer:
+                    selected_option = request.env['elearning.lesson.question.option'].browse(int(user_answer))
+                    if selected_option.exists() and selected_option.is_correct:
+                        correct_answers += 1
+            elif question.question_type == 'text':
+                # Case insensitive comparison
+                if user_answer and user_answer.strip().lower() == question.correct_answer_text.strip().lower():
+                    correct_answers += 1
+        
+        score = 0
+        if total_questions > 0:
+            score = (correct_answers / total_questions) * 100
+            
+        passed = score >= lesson.quiz_passing_score
+        
+        if passed:
+            enrollment.mark_lesson_complete(lesson_id)
+            
+        quiz_results = {
+            'score': int(score),
+            'passed': passed,
+            'user_answers': user_answers,
+            'total_questions': total_questions,
+            'correct_count': correct_answers
+        }
+        
+        return request.render('odoo_Project2.lesson_template', {
+            'lesson': lesson,
+            'enrollment': enrollment,
+            'quiz_results': quiz_results
+        })
+
     @http.route('/elearning/certificate/download/<int:enrollment_id>', type='http', auth='user', website=True)
     def download_certificate(self, enrollment_id, **kw):
         """Download certificate PDF"""

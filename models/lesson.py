@@ -50,6 +50,46 @@ class Lesson(models.Model):
             else:
                 lesson.video_embed_url = False
 
+    @api.model
+    def create(self, vals):
+        lesson = super(Lesson, self).create(vals)
+        if lesson.course_id:
+            self.env.flush_all()
+            lesson.course_id.invalidate_recordset(['lessons'])
+            enrollments = self.env['elearning.enrollment'].sudo().search([('course_id', '=', lesson.course_id.id)])
+            if enrollments:
+                enrollments._recompute_progress()
+        return lesson
+
+    def write(self, vals):
+        # Capture courses before write (in case course_id changes)
+        courses = self.mapped('course_id')
+        res = super(Lesson, self).write(vals)
+        # Add new courses
+        courses |= self.mapped('course_id')
+        
+        self.env.flush_all()
+        
+        for course in courses:
+            course.invalidate_recordset(['lessons'])
+            enrollments = self.env['elearning.enrollment'].sudo().search([('course_id', '=', course.id)])
+            if enrollments:
+                enrollments._recompute_progress()
+        return res
+
+    def unlink(self):
+        courses = self.mapped('course_id')
+        res = super(Lesson, self).unlink()
+        
+        self.env.flush_all()
+        
+        for course in courses:
+            course.invalidate_recordset(['lessons'])
+            enrollments = self.env['elearning.enrollment'].sudo().search([('course_id', '=', course.id)])
+            if enrollments:
+                enrollments._recompute_progress()
+        return res
+
 
 class LessonQuestion(models.Model):
     _name = 'elearning.lesson.question'
@@ -71,60 +111,6 @@ class LessonQuestion(models.Model):
     
     # For text input
     correct_answer_text = fields.Char(string='Correct Answer Text')
-
-    @api.model
-    def create(self, vals):
-        lesson = super(Lesson, self).create(vals)
-        
-        # Ensure we have the course ID
-        if lesson.course_id:
-            # Force flush of all pending writes to DB to ensure search visibility
-            self.env.flush_all()
-            
-            # Update enrollments
-            enrollments = self.env['elearning.enrollment'].sudo().search([('course_id', '=', lesson.course_id.id)])
-            if enrollments:
-                # Force recomputation
-                enrollments._recompute_progress()
-                
-        return lesson
-
-    def write(self, vals):
-        # Capture old courses before change if course_id is being updated
-        courses_to_update = self.env['elearning.course']
-        if 'course_id' in vals:
-            courses_to_update |= self.mapped('course_id')
-            
-        res = super(Lesson, self).write(vals)
-        
-        if 'is_published' in vals or 'course_id' in vals:
-            # Add new courses
-            courses_to_update |= self.mapped('course_id')
-            
-            # Force flush to ensure DB is consistent for search
-            self.env.flush_all()
-            
-            for course in courses_to_update:
-                # Use sudo() to ensure we find all enrollments regardless of current user's permissions
-                enrollments = self.env['elearning.enrollment'].sudo().search([('course_id', '=', course.id)])
-                if enrollments:
-                    enrollments._recompute_progress()
-        return res
-
-    def unlink(self):
-        # Store course_ids before deletion to recompute progress
-        course_ids = self.mapped('course_id')
-        res = super(Lesson, self).unlink()
-        
-        # Force flush to ensure DB is consistent for search
-        self.env.flush_all()
-        
-        for course in course_ids:
-            # Use sudo() to ensure we find all enrollments regardless of current user's permissions
-            enrollments = self.env['elearning.enrollment'].sudo().search([('course_id', '=', course.id)])
-            if enrollments:
-                enrollments._recompute_progress()
-        return res
 
 
 class LessonQuestionOption(models.Model):

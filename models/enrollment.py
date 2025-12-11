@@ -8,14 +8,17 @@ class EnrollmentExtension(models.Model):
     # Basic fields
     course_id = fields.Many2one('elearning.course', string='Course', required=True, ondelete='cascade')
     student_id = fields.Many2one('res.partner', string='Student', required=True, ondelete='cascade')
+    
+    completed_lesson_ids = fields.Many2many('elearning.lesson', string='Completed Lessons')
+    enrollment_date = fields.Date(string='Enrollment Date', default=fields.Date.today)
+    
+    # Progress and Status
+    progress = fields.Float(string='Progress (%)', default=0.0)
     status = fields.Selection([
         ('active', 'Active'),
         ('completed', 'Completed'),
         ('cancelled', 'Cancelled'),
     ], string='Status', default='active')
-    enrollment_date = fields.Date(string='Enrollment Date', default=fields.Date.today)
-    progress = fields.Float(string='Progress (%)', default=0.0)
-    completed_lesson_ids = fields.Many2many('elearning.lesson', string='Completed Lessons')
     
     # Certificate fields
     certificate_earned = fields.Boolean(string='Certificate Earned', default=False)
@@ -23,53 +26,49 @@ class EnrollmentExtension(models.Model):
     final_score = fields.Float(string='Final Score (%)')
     
     def mark_lesson_complete(self, lesson_id):
-        """Mark lesson as complete and check certificate eligibility"""
+        """Mark lesson as complete"""
         if lesson_id not in self.completed_lesson_ids.ids:
             self.write({'completed_lesson_ids': [(4, lesson_id)]})
-            
-        self._recompute_progress()
+            self._recompute_progress()
         return True
     
     def _recompute_progress(self):
         """Recalculate progress and update status"""
         # Force flush to ensure new lessons are visible to search
         self.env.flush_all()
-        # Invalidate all caches to ensure we read fresh data from DB
         self.env.invalidate_all()
         
         for enrollment in self:
-            # Use search instead of search_count to be absolutely sure
+            # Find published lessons for this course
             published_lessons = self.env['elearning.lesson'].sudo().search([
                 ('course_id', '=', enrollment.course_id.id),
                 ('is_published', '=', True)
             ])
             total_lessons = len(published_lessons)
             
-            # Filter completed lessons to ensure they are still published
-            completed_published_count = 0
-            for lesson in enrollment.completed_lesson_ids:
-                if lesson.is_published:
-                    completed_published_count += 1
+            # Count completed lessons that are also published
+            completed_published = enrollment.completed_lesson_ids.filtered(lambda l: l.is_published)
+            completed_count = len(completed_published)
             
+            # Calculate progress
             new_progress = 0.0
             if total_lessons > 0:
-                new_progress = (completed_published_count / total_lessons) * 100.0
+                new_progress = (completed_count / total_lessons) * 100.0
             else:
                 new_progress = 100.0
             
             vals = {'progress': new_progress}
             
-            # Check if certificate should be awarded
-            if new_progress >= enrollment.course_id.require_completion_percentage:
-                enrollment._create_certificate()
-                if enrollment.status != 'completed':
+            # Update Status
+            if enrollment.status != 'cancelled':
+                if new_progress >= enrollment.course_id.require_completion_percentage:
                     vals['status'] = 'completed'
+                    # Create certificate if needed
+                    if not enrollment.certificate_earned:
+                        enrollment._create_certificate()
+                else:
+                    vals['status'] = 'active'
             
-            # If new content was added (progress < 100) and it was completed, revert to active
-            if new_progress < 100 and enrollment.status == 'completed':
-                vals['status'] = 'active'
-            
-            # Write changes explicitly
             enrollment.write(vals)
 
     def _create_certificate(self):

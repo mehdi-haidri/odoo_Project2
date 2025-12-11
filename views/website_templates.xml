@@ -250,40 +250,74 @@
                                             <div class="alert alert-warning">
                                                 <h4 class="alert-heading"><i class="fa fa-question-circle"></i> Quiz</h4>
                                                 <p>Please answer the following questions to complete this lesson.</p>
+                                                <t t-if="quiz_results">
+                                                    <hr/>
+                                                    <p class="mb-0">
+                                                        <strong>Score: <t t-esc="quiz_results['score']"/>%</strong>
+                                                        <t t-if="quiz_results['passed']">
+                                                            <span class="badge badge-success">Passed</span>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <span class="badge badge-danger">Failed</span>
+                                                            - Required: <t t-esc="lesson.quiz_passing_score"/>%
+                                                        </t>
+                                                    </p>
+                                                </t>
                                             </div>
                                             
-                                            <div class="quiz-container">
-                                                <t t-foreach="lesson.question_ids" t-as="question">
-                                                    <div class="card mb-3">
-                                                        <div class="card-header">
-                                                            <strong>Question <t t-esc="question.sequence"/></strong>
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <p class="card-text"><t t-esc="question.question"/></p>
-                                                            
-                                                            <t t-if="question.question_type == 'multiple_choice'">
-                                                                <t t-foreach="question.option_ids" t-as="option">
-                                                                    <div class="form-check">
-                                                                        <input class="form-check-input" type="radio" t-attf-name="question_{{question.id}}" t-attf-id="q{{question.id}}_opt{{option.id}}" t-att-value="option.id" disabled="disabled"/>
-                                                                        <label class="form-check-label" t-attf-for="q{{question.id}}_opt{{option.id}}">
-                                                                            <t t-esc="option.content"/>
-                                                                            <t t-if="option.is_correct">
-                                                                                <span class="badge badge-success ml-2">Correct Answer</span>
-                                                                            </t>
-                                                                        </label>
-                                                                    </div>
+                                            <form method="POST" t-attf-action="/elearning/lesson/{{ lesson.id }}/quiz/submit">
+                                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                <div class="quiz-container">
+                                                    <t t-foreach="lesson.question_ids" t-as="question">
+                                                        <div class="card mb-3">
+                                                            <div class="card-header">
+                                                                <strong>Question <t t-esc="question.sequence"/></strong>
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <p class="card-text"><t t-esc="question.question"/></p>
+                                                                
+                                                                <t t-if="question.question_type == 'multiple_choice'">
+                                                                    <t t-foreach="question.option_ids" t-as="option">
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="radio" 
+                                                                                   t-attf-name="question_{{question.id}}" 
+                                                                                   t-attf-id="q{{question.id}}_opt{{option.id}}" 
+                                                                                   t-att-value="option.id"
+                                                                                   t-att-checked="quiz_results and str(quiz_results['user_answers'].get(str(question.id))) == str(option.id)"
+                                                                                   t-att-disabled="quiz_results and quiz_results['passed']"/>
+                                                                            <label class="form-check-label" t-attf-for="q{{question.id}}_opt{{option.id}}">
+                                                                                <t t-esc="option.content"/>
+                                                                                <t t-if="quiz_results">
+                                                                                    <t t-if="option.is_correct">
+                                                                                        <span class="badge badge-success ml-2">Correct Answer</span>
+                                                                                    </t>
+                                                                                    <t t-elif="str(quiz_results['user_answers'].get(str(question.id))) == str(option.id) and not option.is_correct">
+                                                                                        <span class="badge badge-danger ml-2">Your Answer</span>
+                                                                                    </t>
+                                                                                </t>
+                                                                            </label>
+                                                                        </div>
+                                                                    </t>
                                                                 </t>
-                                                            </t>
-                                                            <t t-if="question.question_type == 'text'">
-                                                                <input type="text" class="form-control" t-attf-name="question_{{question.id}}" disabled="disabled" placeholder="Enter your answer"/>
-                                                            </t>
+                                                                <t t-if="question.question_type == 'text'">
+                                                                    <input type="text" class="form-control" 
+                                                                           t-attf-name="question_{{question.id}}" 
+                                                                           t-att-value="quiz_results and quiz_results['user_answers'].get(str(question.id)) or ''"
+                                                                           t-att-disabled="quiz_results and quiz_results['passed']"
+                                                                           placeholder="Enter your answer"/>
+                                                                    <t t-if="quiz_results and not quiz_results['passed']">
+                                                                        <small class="text-muted mt-2 d-block">Correct Answer: <t t-esc="question.correct_answer_text"/></small>
+                                                                    </t>
+                                                                </t>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </t>
-                                                <div class="alert alert-info">
-                                                    <small><em>Note: Interactive quiz submission is not yet enabled. You can mark the lesson as complete below.</em></small>
+                                                    </t>
+                                                    
+                                                    <t t-if="not quiz_results or not quiz_results['passed']">
+                                                        <button type="submit" class="btn btn-primary">Submit Quiz</button>
+                                                    </t>
                                                 </div>
-                                            </div>
+                                            </form>
                                         </div>
                                     </t>
                                     
@@ -301,7 +335,7 @@
                                                         <i class="fa fa-check-circle"></i> Lesson Completed
                                                     </div>
                                                 </t>
-                                                <t t-else="">
+                                                <t t-elif="lesson.lesson_type != 'quiz'">
                                                     <form method="POST" t-attf-action="/elearning/lesson/{{ lesson.id }}/complete" class="d-inline">
                                                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                                         <button type="submit" class="btn btn-success">
