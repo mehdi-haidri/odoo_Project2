@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Report Action -->
+        <record id="action_report_elearning_certificate" model="ir.actions.report">
+            <field name="name">Certificate</field>
+            <field name="model">elearning.certificate</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">odoo_Project2.report_certificate_document</field>
+            <field name="report_file">odoo_Project2.report_certificate_document</field>
+            <field name="print_report_name">'Certificate - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="model_elearning_certificate"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="paperformat_certificate_landscape"/>
+        </record>
+
+        <!-- Report Template -->
+        <template id="report_certificate_document">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.basic_layout">
+                        <div class="page" style="position: relative; width: 297mm; height: 210mm; color: black;">
+                            <!-- Background Image -->
+                            <img t-att-src="'/odoo_Project2/static/src/img/certificate_template.png'" 
+                                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1000;"/>
+                            
+                            <!-- Student Name -->
+                            <div style="position: absolute; top: 42%; left: 0; width: 100%; text-align: center;">
+                                <h2 style="font-size: 48px; font-weight: bold; color: #000000; margin: 0;"><span t-field="o.student_id.name"/></h2>
+                            </div>
+                            
+                            <!-- Course Name -->
+                            <div style="position: absolute; top: 58%; left: 0; width: 100%; text-align: center;">
+                                <h3 style="font-size: 32px; font-weight: bold; color: #000000; margin: 0;"><span t-field="o.course_id.name"/></h3>
+                            </div>
+                            
+                            <!-- Date -->
+                            <div style="position: absolute; bottom: 25%; left: 25%; font-size: 18px;">
+                                <span t-field="o.issue_date" t-options='{"widget": "date"}'/>
+                            </div>
+                            
+                            <!-- Grade/Score -->
+                            <div style="position: absolute; bottom: 25%; right: 25%; font-size: 18px;">
+                                <span t-field="o.grade"/>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

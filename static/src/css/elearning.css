@@ -1,0 +1,133 @@
+/* E-Learning Module Styles */
+
+.elearning-container {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.elearning-course-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.elearning-course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.elearning-course-image {
+    height: 200px;
+    object-fit: cover;
+}
+
+.elearning-course-level {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.level-beginner {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.level-intermediate {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.level-advanced {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.elearning-progress {
+    margin: 1rem 0;
+}
+
+.elearning-lesson-list {
+    list-style: none;
+    padding: 0;
+}
+
+.elearning-lesson-item {
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.elearning-lesson-item:last-child {
+    border-bottom: none;
+}
+
+.elearning-lesson-item a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.elearning-lesson-item a:hover {
+    text-decoration: underline;
+}
+
+.elearning-certificate {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3rem;
+    border-radius: 8px;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.elearning-certificate h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    font-weight: 300;
+    letter-spacing: 2px;
+}
+
+.elearning-certificate h2 {
+    font-size: 2rem;
+    margin: 1rem 0;
+}
+
+.certificate-hash {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    word-break: break-all;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.elearning-status {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.status-enrolled {
+    background-color: #cfe2ff;
+    color: #084298;
+}
+
+.status-in-progress {
+    background-color: #fff3cd;
+    color: #664d03;
+}
+
+.status-completed {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+.status-suspended {
+    background-color: #f8d7da;
+    color: #842029;
+}

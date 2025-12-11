@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Course Form View -->
+        <record id="view_elearning_course_form" model="ir.ui.view">
+            <field name="name">elearning.course.form</field>
+            <field name="model">elearning.course</field>
+            <field name="arch" type="xml">
+                <form string="Course">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="image" widget="image" class="oe_avatar"/>
+                                <field name="instructor_id"/>
+                                <field name="category_id"/>
+                            </group>
+                            <group>
+                                <field name="level"/>
+                                <field name="price"/>
+                                <field name="duration_hours"/>
+                                <field name="is_published"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Description">
+                                <field name="description"/>
+                            </page>
+                            <page string="Lessons">
+                                <field name="lessons">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="sequence"/>
+                                        <field name="duration_minutes"/>
+                                        <field name="is_published"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Enrollments">
+                                <field name="enrollments">
+                                    <tree>
+                                        <field name="student_id"/>
+                                        <field name="status"/>
+                                        <field name="progress"/>
+                                        <field name="enrollment_date"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Course Tree View -->
+        <record id="view_elearning_course_tree" model="ir.ui.view">
+            <field name="name">elearning.course.tree</field>
+            <field name="model">elearning.course</field>
+            <field name="arch" type="xml">
+                <tree string="Courses">
+                    <field name="name"/>
+                    <field name="instructor_id"/>
+                    <field name="level"/>
+                    <field name="student_count"/>
+                    <field name="is_published"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Course Action -->
+        <record id="action_elearning_course" model="ir.actions.act_window">
+            <field name="name">Courses</field>
+            <field name="res_model">elearning.course</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Menu Item -->
+        <menuitem id="menu_elearning" name="E-Learning" sequence="10"/>
+        <!-- Submenu items moved to menuitems.xml -->
+        <!-- Server Action to Recalculate Progress for Course -->
+        <record id="action_course_recalculate_progress" model="ir.actions.server">
+            <field name="name">Recalculate Student Progress</field>
+            <field name="model_id" ref="model_elearning_course"/>
+            <field name="binding_model_id" ref="model_elearning_course"/>
+            <field name="state">code</field>
+            <field name="code">
+for course in records:
+    enrollments = env['elearning.enrollment'].search([('course_id', '=', course.id)])
+    enrollments._recompute_progress()
+            </field>
+        </record>
+    </data>
+</odoo>

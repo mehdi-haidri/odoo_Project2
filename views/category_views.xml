@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Category Form View -->
+        <record id="view_elearning_category_form" model="ir.ui.view">
+            <field name="name">elearning.category.form</field>
+            <field name="model">elearning.category</field>
+            <field name="arch" type="xml">
+                <form string="Category">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <notebook>
+                            <page string="Description">
+                                <field name="description"/>
+                            </page>
+                            <page string="Courses">
+                                <field name="courses">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="instructor_id"/>
+                                        <field name="is_published"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Category Tree View -->
+        <record id="view_elearning_category_tree" model="ir.ui.view">
+            <field name="name">elearning.category.tree</field>
+            <field name="model">elearning.category</field>
+            <field name="arch" type="xml">
+                <tree string="Categories" editable="bottom">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Category Action -->
+        <record id="action_elearning_category" model="ir.actions.act_window">
+            <field name="name">Course Categories</field>
+            <field name="res_model">elearning.category</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Menu Item -->
+        <!-- Moved to menuitems.xml -->
+    </data>
+</odoo>

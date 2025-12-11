@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="courses_template" name="E-Learning Courses">
+        <t t-call="website.layout">
+            <div id="elearning_courses" class="elearning-container">
+                <div class="container">
+                    <div class="row mb-5">
+                        <div class="col-lg-8">
+                            <h1 class="mb-3">Online Courses</h1>
+                            <p class="lead text-muted">Learn new skills at your own pace with our comprehensive courses</p>
+                        </div>
+                    </div>
+                    
+                    <t t-if="courses">
+                        <div class="row">
+                            <t t-foreach="courses" t-as="course">
+                                <div class="col-lg-4 col-md-6 mb-4">
+                                    <div class="card elearning-course-card h-100">
+                                        <t t-if="course.image">
+                                            <img class="card-img-top elearning-course-image" t-attf-src="data:image/png;base64,{{ course.image }}" alt="{{ course.name }}"/>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="card-img-top elearning-course-image bg-light d-flex align-items-center justify-content-center">
+                                                <i class="fa fa-graduation-cap fa-3x text-muted"></i>
+                                            </div>
+                                        </t>
+                                        <div class="card-body d-flex flex-column">
+                                            <h5 class="card-title"><t t-esc="course.name"/></h5>
+                                            <p class="mb-2">
+                                                <span t-attf-class="elearning-course-level level-{{ course.level }}">
+                                                    <span t-field="course.level"/>
+                                                </span>
+                                            </p>
+                                            <p class="card-text text-muted small">
+                                                <i class="fa fa-user"></i> <t t-esc="course.instructor_id.name"/>
+                                            </p>
+                                            <p class="card-text text-muted small">
+                                                <i class="fa fa-clock-o"></i> <t t-esc="course.duration_hours"/> hours
+                                            </p>
+                                            <p class="card-text flex-grow-1"><t t-raw="course.description"/></p>
+                                            <div class="mt-auto">
+                                                <t t-if="course.price > 0">
+                                                    <p class="h5 text-primary mb-3">$<t t-esc="'{:.2f}'.format(course.price)"/></p>
+                                                </t>
+                                                <a t-attf-href="/elearning/course/{{ course.id }}" class="btn btn-primary btn-block">
+                                                    <i class="fa fa-arrow-right"></i> View Course
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="alert alert-info">
+                            <p>No courses available at the moment.</p>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="course_detail_template" name="Course Detail">
+        <t t-call="website.layout">
+            <div id="elearning_course_detail" class="elearning-container">
+                <div class="container">
+                    <div class="row mb-5">
+                        <div class="col-lg-8">
+                            <h1 class="mb-3"><t t-esc="course.name"/></h1>
+                            <div class="mb-3">
+                                <span t-attf-class="elearning-course-level level-{{ course.level }} mr-2">
+                                    <span t-field="course.level"/>
+                                </span>
+                                <span class="text-muted"><i class="fa fa-user"></i> <t t-esc="course.instructor_id.name"/></span>
+                            </div>
+                            <p class="lead text-muted"><t t-raw="course.description"/></p>
+                            
+                            <hr/>
+                            
+                            <h3 class="mb-3">Course Content</h3>
+                            <ul class="elearning-lesson-list">
+                                <t t-foreach="course.lessons" t-as="lesson">
+                                    <li class="elearning-lesson-item" t-if="lesson.is_published">
+                                        <div>
+                                            <t t-if="enrollment">
+                                                <a t-attf-href="/elearning/lesson/{{ lesson.id }}">
+                                                    <t t-if="lesson.lesson_type == 'video'">
+                                                        <i class="fa fa-play-circle"></i>
+                                                    </t>
+                                                    <t t-elif="lesson.lesson_type == 'document'">
+                                                        <i class="fa fa-file-text-o"></i>
+                                                    </t>
+                                                    <t t-elif="lesson.lesson_type == 'quiz'">
+                                                        <i class="fa fa-question-circle"></i>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <i class="fa fa-circle-o"></i>
+                                                    </t>
+                                                    <t t-esc="lesson.name"/>
+                                                </a>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="text-muted" title="Enroll to access">
+                                                    <t t-if="lesson.lesson_type == 'video'">
+                                                        <i class="fa fa-play-circle"></i>
+                                                    </t>
+                                                    <t t-elif="lesson.lesson_type == 'document'">
+                                                        <i class="fa fa-file-text-o"></i>
+                                                    </t>
+                                                    <t t-elif="lesson.lesson_type == 'quiz'">
+                                                        <i class="fa fa-question-circle"></i>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <i class="fa fa-lock"></i>
+                                                    </t>
+                                                    <t t-esc="lesson.name"/>
+                                                </span>
+                                            </t>
+                                        </div>
+                                        <span class="text-muted">
+                                            <i class="fa fa-clock-o"></i> <t t-esc="lesson.duration_minutes"/> min
+                                        </span>
+                                    </li>
+                                </t>
+                            </ul>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card sticky-top" style="top: 20px;">
+                                <div class="card-body">
+                                    <t t-if="enrollment">
+                                        <h5 class="card-title mb-3">Your Progress</h5>
+                                        <div class="elearning-progress mb-3">
+                                            <div class="progress mb-2">
+                                                <div class="progress-bar bg-success" role="progressbar" 
+                                                     t-attf-style="width: {{ enrollment.progress }}%;" 
+                                                     t-attf-aria-valuenow="{{ enrollment.progress }}" 
+                                                     aria-valuemin="0" aria-valuemax="100">
+                                                    <t t-esc="'{:.0f}'.format(enrollment.progress)"/>%
+                                                </div>
+                                            </div>
+                                            <p class="mb-0"><strong>Status:</strong> 
+                                                <span t-attf-class="elearning-status status-{{ enrollment.status }}">
+                                                    <span t-field="enrollment.status"/>
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <t t-if="enrollment.status == 'completed'">
+                                            <div class="alert alert-success mb-3">
+                                                <i class="fa fa-trophy"></i> Course Completed!
+                                            </div>
+                                            <a t-attf-href="/elearning/certificate/download/{{ enrollment.id }}" class="btn btn-success btn-block mb-2">
+                                                <i class="fa fa-download"></i> Download Certificate
+                                            </a>
+                                        </t>
+                                        <t t-if="enrollment.status != 'completed'">
+                                            <a href="#" class="btn btn-primary btn-block">Continue Learning</a>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="alert alert-success mb-0">
+                                                <i class="fa fa-check"></i> Course Completed!
+                                            </div>
+                                        </t>
+                                    </t>
+                                    <t t-else="">
+                                        <h5 class="card-title mb-3">Ready to learn?</h5>
+                                        <p class="text-muted"><strong>Course Price:</strong></p>
+                                        <h3 class="text-primary mb-3">
+                                            <t t-if="course.price > 0">
+                                                $<t t-esc="'{:.2f}'.format(course.price)"/>
+                                            </t>
+                                            <t t-else="">
+                                                Free
+                                            </t>
+                                        </h3>
+                                        <form method="POST" t-attf-action="/elearning/enroll/{{ course.id }}" class="mb-2">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <button type="submit" class="btn btn-success btn-block btn-lg">
+                                                <i class="fa fa-sign-in"></i> Enroll Now
+                                            </button>
+                                        </form>
+                                        <p class="text-center text-muted small">
+                                            <t t-esc="course.student_count"/> students enrolled
+                                        </p>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="lesson_template" name="Lesson View">
+        <t t-call="website.layout">
+            <div id="elearning_lesson" class="elearning-container">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-body">
+                                    <nav aria-label="breadcrumb" class="mb-3">
+                                        <ol class="breadcrumb">
+                                            <li class="breadcrumb-item">
+                                                <a t-attf-href="/elearning/course/{{ lesson.course_id.id }}">
+                                                    <t t-esc="lesson.course_id.name"/>
+                                                </a>
+                                            </li>
+                                            <li class="breadcrumb-item active"><t t-esc="lesson.name"/></li>
+                                        </ol>
+                                    </nav>
+                                    
+                                    <h1 class="mb-3"><t t-esc="lesson.name"/></h1>
+                                    <p class="text-muted mb-3">
+                                        <i class="fa fa-clock-o"></i> <t t-esc="lesson.duration_minutes"/> minutes | 
+                                        <span class="badge badge-info"><t t-esc="lesson.lesson_type"/></span>
+                                    </p>
+                                    
+                                    <!-- Video Content -->
+                                    <t t-if="lesson.lesson_type == 'video' and lesson.video_embed_url">
+                                        <div class="mb-4 position-relative" style="padding-bottom: 56.25%; height: 0; overflow: hidden;">
+                                            <iframe t-attf-src="{{ lesson.video_embed_url }}" 
+                                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
+                                                    frameborder="0" allowfullscreen=""></iframe>
+                                        </div>
+                                    </t>
+
+                                    <!-- Document Content -->
+                                    <t t-if="lesson.lesson_type == 'document' and lesson.document_file">
+                                        <div class="alert alert-info mb-4">
+                                            <div class="row align-items-center">
+                                                <div class="col-auto">
+                                                    <i class="fa fa-file-text-o fa-3x"></i>
+                                                </div>
+                                                <div class="col">
+                                                    <h5 class="mb-1"><t t-esc="lesson.document_filename"/></h5>
+                                                    <a t-attf-href="/web/content/elearning.lesson/{{ lesson.id }}/document_file/{{ lesson.document_filename }}?download=true" class="btn btn-primary btn-sm">
+                                                        <i class="fa fa-download"></i> Download
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+
+                                    <!-- Quiz Content -->
+                                    <t t-if="lesson.lesson_type == 'quiz'">
+                                        <div class="mb-4">
+                                            <div class="alert alert-warning">
+                                                <h4 class="alert-heading"><i class="fa fa-question-circle"></i> Quiz</h4>
+                                                <p>Please answer the following questions to complete this lesson.</p>
+                                            </div>
+                                            
+                                            <div class="quiz-container">
+                                                <t t-foreach="lesson.question_ids" t-as="question">
+                                                    <div class="card mb-3">
+                                                        <div class="card-header">
+                                                            <strong>Question <t t-esc="question.sequence"/></strong>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <p class="card-text"><t t-esc="question.question"/></p>
+                                                            
+                                                            <t t-if="question.question_type == 'multiple_choice'">
+                                                                <t t-foreach="question.option_ids" t-as="option">
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="radio" t-attf-name="question_{{question.id}}" t-attf-id="q{{question.id}}_opt{{option.id}}" t-att-value="option.id" disabled="disabled"/>
+                                                                        <label class="form-check-label" t-attf-for="q{{question.id}}_opt{{option.id}}">
+                                                                            <t t-esc="option.content"/>
+                                                                            <t t-if="option.is_correct">
+                                                                                <span class="badge badge-success ml-2">Correct Answer</span>
+                                                                            </t>
+                                                                        </label>
+                                                                    </div>
+                                                                </t>
+                                                            </t>
+                                                            <t t-if="question.question_type == 'text'">
+                                                                <input type="text" class="form-control" t-attf-name="question_{{question.id}}" disabled="disabled" placeholder="Enter your answer"/>
+                                                            </t>
+                                                        </div>
+                                                    </div>
+                                                </t>
+                                                <div class="alert alert-info">
+                                                    <small><em>Note: Interactive quiz submission is not yet enabled. You can mark the lesson as complete below.</em></small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                    
+                                    <div class="lesson-content">
+                                        <t t-raw="lesson.content"/>
+                                    </div>
+                                    
+                                    <hr/>
+                                    
+                                    <div class="row mt-4">
+                                        <div class="col-12">
+                                            <t t-if="enrollment">
+                                                <t t-if="lesson.id in enrollment.completed_lesson_ids.ids">
+                                                    <div class="alert alert-success">
+                                                        <i class="fa fa-check-circle"></i> Lesson Completed
+                                                    </div>
+                                                </t>
+                                                <t t-else="">
+                                                    <form method="POST" t-attf-action="/elearning/lesson/{{ lesson.id }}/complete" class="d-inline">
+                                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                        <button type="submit" class="btn btn-success">
+                                                            <i class="fa fa-check"></i> Mark as Complete
+                                                        </button>
+                                                    </form>
+                                                </t>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card mb-3 sticky-top" style="top: 20px;">
+                                <div class="card-body">
+                                    <h5 class="card-title">Course Progress</h5>
+                                    <t t-if="enrollment">
+                                        <div class="progress mb-2">
+                                            <div class="progress-bar bg-info" role="progressbar" 
+                                                 t-attf-style="width: {{ enrollment.progress }}%;" 
+                                                 t-attf-aria-valuenow="{{ enrollment.progress }}" 
+                                                 aria-valuemin="0" aria-valuemax="100">
+                                                <t t-esc="'{:.0f}'.format(enrollment.progress)"/>%
+                                            </div>
+                                        </div>
+                                        <p class="small text-muted">
+                                            <t t-esc="len(enrollment.completed_lesson_ids.filtered(lambda l: l.is_published))"/> of <t t-esc="len(lesson.course_id.lessons.filtered(lambda l: l.is_published))"/> lessons completed
+                                        </p>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="alert alert-warning mb-0">
+                                            <small>You need to enroll in this course to track progress</small>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">Course Lessons</h6>
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    <t t-foreach="lesson.course_id.lessons" t-as="l">
+                                        <li t-attf-class="list-group-item {'active' if l.id == lesson.id else ''}">
+                                            <a t-attf-href="/elearning/lesson/{{ l.id }}" 
+                                               t-attf-class="{'text-white' if l.id == lesson.id else ''}">
+                                                <t t-esc="l.name"/>
+                                            </a>
+                                        </li>
+                                    </t>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="certificate_template" name="Certificate">
+        <t t-call="website.layout">
+            <div id="elearning_certificate" class="elearning-container">
+                <div class="container">
+                    <div class="text-center mb-5">
+                        <h1>Certificate of Completion</h1>
+                    </div>
+                    
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+                            <div class="elearning-certificate">
+                                <div class="mb-5">
+                                    <i class="fa fa-certificate fa-5x mb-3"></i>
+                                </div>
+                                
+                                <h2 class="mb-4"><t t-esc="certificate.student_id.name"/></h2>
+                                
+                                <p class="lead mb-4">has successfully completed</p>
+                                
+                                <h1 class="mb-4"><t t-esc="certificate.course_id.name"/></h1>
+                                
+                                <div class="row mt-5 pt-5">
+                                    <div class="col-md-6">
+                                        <p><strong>Certificate No:</strong></p>
+                                        <p><t t-esc="certificate.name"/></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Issue Date:</strong></p>
+                                        <p><t t-esc="certificate.issue_date.strftime('%B %d, %Y')"/></p>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mt-3">
+                                    <div class="col-md-6">
+                                        <p><strong>Grade:</strong></p>
+                                        <p><t t-esc="'{:.0f}'.format(certificate.grade)"/>%</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Status:</strong></p>
+                                        <p><t t-if="certificate.verify_certificate()">✓ Valid</t><t t-else="">✗ Invalid</t></p>
+                                    </div>
+                                </div>
+                                
+                                <div class="certificate-hash">
+                                    <p><strong>Certificate Hash:</strong></p>
+                                    <p><t t-esc="certificate.certificate_hash"/></p>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-5">
+                                <button onclick="window.print()" class="btn btn-secondary mr-2">
+                                    <i class="fa fa-print"></i> Print Certificate
+                                </button>
+                                <a href="/elearning/my-certificates" class="btn btn-primary">
+                                    <i class="fa fa-arrow-left"></i> Back to Certificates
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="my_certificates_template" name="My Certificates">
+        <t t-call="website.layout">
+            <div id="elearning_my_certificates" class="elearning-container">
+                <div class="container">
+                    <h1 class="mb-5">My Certificates</h1>
+                    
+                    <t t-if="certificates">
+                        <div class="row">
+                            <t t-foreach="certificates" t-as="cert">
+                                <div class="col-lg-4 col-md-6 mb-4">
+                                    <div class="card elearning-course-card h-100">
+                                        <div class="card-body text-center">
+                                            <i class="fa fa-certificate fa-4x text-warning mb-3"></i>
+                                            <h5 class="card-title"><t t-esc="cert.course_id.name"/></h5>
+                                            <p class="text-muted small">
+                                                <i class="fa fa-calendar"></i> <t t-esc="cert.issue_date.strftime('%B %d, %Y')"/>
+                                            </p>
+                                            <p class="h6 text-success">Grade: <t t-esc="'{:.0f}'.format(cert.grade)"/>%</p>
+                                            <a t-attf-href="/elearning/certificate/{{ cert.id }}" class="btn btn-primary btn-sm">
+                                                View Certificate
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="alert alert-info">
+                            <p>You haven't earned any certificates yet. <a href="/elearning/">Explore courses</a></p>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

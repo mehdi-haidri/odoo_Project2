@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Certificate Form View -->
+        <record id="view_elearning_certificate_form" model="ir.ui.view">
+            <field name="name">elearning.certificate.form</field>
+            <field name="model">elearning.certificate</field>
+            <field name="arch" type="xml">
+                <form string="Certificate">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" readonly="1"/>
+                                <field name="student_id"/>
+                                <field name="course_id"/>
+                            </group>
+                            <group>
+                                <field name="issue_date"/>
+                                <field name="expiration_date"/>
+                                <field name="grade"/>
+                                <field name="is_valid"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="certificate_hash" readonly="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Certificate Tree View -->
+        <record id="view_elearning_certificate_tree" model="ir.ui.view">
+            <field name="name">elearning.certificate.tree</field>
+            <field name="model">elearning.certificate</field>
+            <field name="arch" type="xml">
+                <tree string="Certificates">
+                    <field name="name"/>
+                    <field name="student_id"/>
+                    <field name="course_id"/>
+                    <field name="grade"/>
+                    <field name="issue_date"/>
+                    <field name="is_valid"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Certificate Action -->
+        <record id="action_elearning_certificate" model="ir.actions.act_window">
+            <field name="name">Certificates</field>
+            <field name="res_model">elearning.certificate</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Menu Item -->
+        <!-- Moved to menuitems.xml -->
+    </data>
+</odoo>

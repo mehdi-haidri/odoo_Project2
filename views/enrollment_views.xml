@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Enrollment Form View -->
+        <record id="view_elearning_enrollment_form" model="ir.ui.view">
+            <field name="name">elearning.enrollment.form</field>
+            <field name="model">elearning.enrollment</field>
+            <field name="arch" type="xml">
+                <form string="Enrollment">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="student_id"/>
+                                <field name="course_id"/>
+                                <field name="status"/>
+                            </group>
+                            <group>
+                                <field name="progress" widget="progressbar"/>
+                                <field name="enrollment_date"/>
+                                <field name="certificate_earned"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Completed Lessons">
+                                <field name="completed_lesson_ids"/>
+                            </page>
+                            <page string="Certificate">
+                                <group>
+                                    <field name="certificate_date"/>
+                                    <field name="final_score"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Enrollment Tree View -->
+        <record id="view_elearning_enrollment_tree" model="ir.ui.view">
+            <field name="name">elearning.enrollment.tree</field>
+            <field name="model">elearning.enrollment</field>
+            <field name="arch" type="xml">
+                <tree string="Enrollments">
+                    <field name="student_id"/>
+                    <field name="course_id"/>
+                    <field name="status"/>
+                    <field name="progress"/>
+                    <field name="enrollment_date"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Enrollment Action -->
+        <record id="action_elearning_enrollment" model="ir.actions.act_window">
+            <field name="name">Enrollments</field>
+            <field name="res_model">elearning.enrollment</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Server Action to Recalculate Progress -->
+        <record id="action_recalculate_progress" model="ir.actions.server">
+            <field name="name">Recalculate Progress</field>
+            <field name="model_id" ref="model_elearning_enrollment"/>
+            <field name="binding_model_id" ref="model_elearning_enrollment"/>
+            <field name="state">code</field>
+            <field name="code">
+records._recompute_progress()
+            </field>
+        </record>
+
+        <!-- Menu Item -->
+        <!-- Moved to menuitems.xml -->
+    </data>
+</odoo>

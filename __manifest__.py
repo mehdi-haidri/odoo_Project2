@@ -1,0 +1,34 @@
+{
+    'name': 'E-Learning Extensions',
+    'version': '1.1',
+    'category':'Website/eLearning',
+    'description': 'Extensions and enhancements for the Odoo E-Learning module with certificates and advanced features',
+    'author': 'Your Name',
+    'license': 'LGPL-3',
+    'depends': ['website', 'web', 'website_slides', 'mail', 'base'],
+    'data': [
+        'security/ir.model.access.csv',
+        'data/paperformat.xml',
+        'views/course_views.xml',
+        'views/category_views.xml',
+        'views/course_extensions_views.xml',
+        'views/lesson_views.xml',
+        'views/enrollment_views.xml',
+        'views/certificate_views.xml',
+        'views/certificate_report.xml',
+        'views/menuitems.xml',
+        'views/website_menu.xml',
+        'views/website_templates.xml',
+    ],
+    'assets': {
+        'web.assets_frontend': [
+            'odoo_Project2/static/src/css/elearning.css',
+        ],
+        'web.report_assets_common': [
+            'odoo_Project2/static/src/css/elearning.css',
+        ],
+    },
+    'installable': True,
+    'application':True,
+    'auto_install': False,
+}

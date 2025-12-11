@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Course Extension Form View - inherits from course_views -->
+        <record id="view_elearning_course_extension_form" model="ir.ui.view">
+            <field name="name">elearning.course.extension.form</field>
+            <field name="model">elearning.course</field>
+            <field name="inherit_id" ref="view_elearning_course_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="Certificate Settings">
+                        <group>
+                            <group>
+                                <field name="require_completion_percentage"/>
+                                <field name="certificate_validity_days"/>
+                                <field name="allow_certificate_download"/>
+                            </group>
+                            <group>
+                                <field name="difficulty_score"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="certificate_template"/>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

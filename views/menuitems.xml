@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Sub-menu items that reference menu_elearning -->
+        <menuitem id="menu_categories" name="Categories" parent="odoo_Project2.menu_elearning" action="action_elearning_category" sequence="5"/>
+        <menuitem id="menu_courses" name="Courses" parent="odoo_Project2.menu_elearning" action="action_elearning_course" sequence="10"/>
+        <menuitem id="menu_lessons" name="Lessons" parent="odoo_Project2.menu_elearning" action="action_elearning_lesson" sequence="20"/>
+        <menuitem id="menu_enrollments" name="Enrollments" parent="odoo_Project2.menu_elearning" action="action_elearning_enrollment" sequence="30"/>
+        <menuitem id="menu_certificates" name="Certificates" parent="odoo_Project2.menu_elearning" action="action_elearning_certificate" sequence="40"/>
+    </data>
+</odoo>
