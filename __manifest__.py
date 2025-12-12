@@ -20,6 +20,9 @@
         'views/website_menu.xml',
         'views/website_templates.xml',
     ],
+    'demo': [
+        'data/demo_data.xml',
+    ],
     'assets': {
         'web.assets_frontend': [
             'odoo_Project2/static/src/css/elearning.css',

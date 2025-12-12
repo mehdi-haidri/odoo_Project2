@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ============================================ -->
+        <!-- CATEGORIES - Course groupings               -->
+        <!-- ============================================ -->
+        
+        <record id="category_programming" model="elearning.category">
+            <field name="name">Programming</field>
+            <field name="description">Learn programming languages and software development</field>
+        </record>
+
+        <record id="category_design" model="elearning.category">
+            <field name="name">Design</field>
+            <field name="description">UI/UX design, graphic design, and creative tools</field>
+        </record>
+
+        <record id="category_business" model="elearning.category">
+            <field name="name">Business</field>
+            <field name="description">Business management, marketing, and entrepreneurship</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- INSTRUCTORS - Using res.partner             -->
+        <!-- ============================================ -->
+        
+        <record id="instructor_john" model="res.partner">
+            <field name="name">John Smith</field>
+            <field name="email">john.smith@example.com</field>
+            <field name="phone">+1 555-0101</field>
+        </record>
+
+        <record id="instructor_sarah" model="res.partner">
+            <field name="name">Sarah Johnson</field>
+            <field name="email">sarah.johnson@example.com</field>
+            <field name="phone">+1 555-0102</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- STUDENTS - Using res.partner                -->
+        <!-- ============================================ -->
+        
+        <record id="student_alice" model="res.partner">
+            <field name="name">Alice Brown</field>
+            <field name="email">alice.brown@student.com</field>
+        </record>
+
+        <record id="student_bob" model="res.partner">
+            <field name="name">Bob Wilson</field>
+            <field name="email">bob.wilson@student.com</field>
+        </record>
+
+        <record id="student_carol" model="res.partner">
+            <field name="name">Carol Davis</field>
+            <field name="email">carol.davis@student.com</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- COURSE 1: Python Programming (Beginner)     -->
+        <!-- ============================================ -->
+        
+        <record id="course_python" model="elearning.course">
+            <field name="name">Python for Beginners</field>
+            <field name="description">Learn Python from scratch! This comprehensive course covers everything from basic syntax to building real applications. Perfect for complete beginners.</field>
+            <field name="instructor_id" ref="instructor_john"/>
+            <field name="category_id" ref="category_programming"/>
+            <field name="level">beginner</field>
+            <field name="price">49.99</field>
+            <field name="duration_hours">20</field>
+            <field name="is_published">True</field>
+            <field name="require_completion_percentage">80</field>
+            <field name="certificate_validity_days">365</field>
+            <field name="allow_certificate_download">True</field>
+            <field name="difficulty_score">30</field>
+        </record>
+
+        <!-- Python Course Lessons -->
+        <record id="lesson_python_intro" model="elearning.lesson">
+            <field name="name">Introduction to Python</field>
+            <field name="course_id" ref="course_python"/>
+            <field name="sequence">10</field>
+            <field name="lesson_type">video</field>
+            <field name="video_url">https://www.youtube.com/watch?v=dQw4w9WgXcQ</field>
+            <field name="duration_minutes">15</field>
+            <field name="is_published">True</field>
+            <field name="description">Welcome to Python! In this lesson, you'll learn what Python is and why it's so popular.</field>
+            <field name="content"><![CDATA[
+                <h2>What is Python?</h2>
+                <p>Python is a high-level, interpreted programming language known for its simplicity and readability.</p>
+                <h3>Why Learn Python?</h3>
+                <ul>
+                    <li>Easy to learn syntax</li>
+                    <li>Versatile - web, data science, AI, automation</li>
+                    <li>Large community and libraries</li>
+                    <li>High demand in job market</li>
+                </ul>
+            ]]></field>
+        </record>
+
+        <record id="lesson_python_variables" model="elearning.lesson">
+            <field name="name">Variables and Data Types</field>
+            <field name="course_id" ref="course_python"/>
+            <field name="sequence">20</field>
+            <field name="lesson_type">document</field>
+            <field name="duration_minutes">30</field>
+            <field name="is_published">True</field>
+            <field name="description">Learn about variables, strings, numbers, and booleans in Python.</field>
+            <field name="content"><![CDATA[
+                <h2>Variables in Python</h2>
+                <pre><code>
+# Creating variables
+name = "Alice"      # String
+age = 25            # Integer
+price = 19.99       # Float
+is_active = True    # Boolean
+                </code></pre>
+                <h3>Data Types</h3>
+                <table class="table">
+                    <tr><th>Type</th><th>Example</th></tr>
+                    <tr><td>str</td><td>"Hello"</td></tr>
+                    <tr><td>int</td><td>42</td></tr>
+                    <tr><td>float</td><td>3.14</td></tr>
+                    <tr><td>bool</td><td>True/False</td></tr>
+                </table>
+            ]]></field>
+        </record>
+
+        <record id="lesson_python_quiz" model="elearning.lesson">
+            <field name="name">Python Basics Quiz</field>
+            <field name="course_id" ref="course_python"/>
+            <field name="sequence">30</field>
+            <field name="lesson_type">quiz</field>
+            <field name="duration_minutes">10</field>
+            <field name="is_published">True</field>
+            <field name="has_quiz">True</field>
+            <field name="quiz_passing_score">70</field>
+            <field name="description">Test your knowledge of Python basics!</field>
+            <field name="content"><![CDATA[
+                <p>Answer the following questions to test your understanding of Python fundamentals.</p>
+                <p><strong>Passing Score: 70%</strong></p>
+            ]]></field>
+        </record>
+
+        <!-- Quiz Questions for Python -->
+        <record id="question_python_1" model="elearning.lesson.question">
+            <field name="lesson_id" ref="lesson_python_quiz"/>
+            <field name="sequence">1</field>
+            <field name="question">What is the correct way to create a variable in Python?</field>
+            <field name="question_type">multiple_choice</field>
+        </record>
+
+        <record id="option_python_1a" model="elearning.lesson.question.option">
+            <field name="question_id" ref="question_python_1"/>
+            <field name="sequence">1</field>
+            <field name="content">var name = "John"</field>
+            <field name="is_correct">False</field>
+        </record>
+        <record id="option_python_1b" model="elearning.lesson.question.option">
+            <field name="question_id" ref="question_python_1"/>
+            <field name="sequence">2</field>
+            <field name="content">name = "John"</field>
+            <field name="is_correct">True</field>
+        </record>
+        <record id="option_python_1c" model="elearning.lesson.question.option">
+            <field name="question_id" ref="question_python_1"/>
+            <field name="sequence">3</field>
+            <field name="content">String name = "John"</field>
+            <field name="is_correct">False</field>
+        </record>
+        <record id="option_python_1d" model="elearning.lesson.question.option">
+            <field name="question_id" ref="question_python_1"/>
+            <field name="sequence">4</field>
+            <field name="content">let name = "John"</field>
+            <field name="is_correct">False</field>
+        </record>
+
+        <record id="question_python_2" model="elearning.lesson.question">
+            <field name="lesson_id" ref="lesson_python_quiz"/>
+            <field name="sequence">2</field>
+            <field name="question">Which data type is used for decimal numbers?</field>
+            <field name="question_type">multiple_choice</field>
+        </record>
+
+        <record id="option_python_2a" model="elearning.lesson.question.option">
+            <field name="question_id" ref="question_python_2"/>
+            <field name="sequence">1</field>
+            <field name="content">int</field>
+            <field name="is_correct">False</field>
+        </record>
+        <record id="option_python_2b" model="elearning.lesson.question.option">
+            <field name="question_id" ref="question_python_2"/>
+            <field name="sequence">2</field>
+            <field name="content">float</field>
+            <field name="is_correct">True</field>
+        </record>
+        <record id="option_python_2c" model="elearning.lesson.question.option">
+            <field name="question_id" ref="question_python_2"/>
+            <field name="sequence">3</field>
+            <field name="content">str</field>
+            <field name="is_correct">False</field>
+        </record>
+        <record id="option_python_2d" model="elearning.lesson.question.option">
+            <field name="question_id" ref="question_python_2"/>
+            <field name="sequence">4</field>
+            <field name="content">decimal</field>
+            <field name="is_correct">False</field>
+        </record>
+
+        <record id="question_python_3" model="elearning.lesson.question">
+            <field name="lesson_id" ref="lesson_python_quiz"/>
+            <field name="sequence">3</field>
+            <field name="question">What does Python stand for?</field>
+            <field name="question_type">text</field>
+            <field name="correct_answer_text">Monty Python</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- COURSE 2: Web Design (Intermediate)         -->
+        <!-- ============================================ -->
+        
+        <record id="course_webdesign" model="elearning.course">
+            <field name="name">Modern Web Design</field>
+            <field name="description">Master the art of creating beautiful, responsive websites. Learn HTML5, CSS3, and modern design principles.</field>
+            <field name="instructor_id" ref="instructor_sarah"/>
+            <field name="category_id" ref="category_design"/>
+            <field name="level">intermediate</field>
+            <field name="price">79.99</field>
+            <field name="duration_hours">35</field>
+            <field name="is_published">True</field>
+            <field name="require_completion_percentage">75</field>
+            <field name="certificate_validity_days">730</field>
+            <field name="difficulty_score">60</field>
+        </record>
+
+        <!-- Web Design Course Lessons -->
+        <record id="lesson_web_html" model="elearning.lesson">
+            <field name="name">HTML5 Fundamentals</field>
+            <field name="course_id" ref="course_webdesign"/>
+            <field name="sequence">10</field>
+            <field name="lesson_type">video</field>
+            <field name="video_url">https://youtu.be/example123</field>
+            <field name="duration_minutes">45</field>
+            <field name="is_published">True</field>
+            <field name="content"><![CDATA[
+                <h2>HTML5 Structure</h2>
+                <pre><code>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;My Page&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;header&gt;...&lt;/header&gt;
+    &lt;main&gt;...&lt;/main&gt;
+    &lt;footer&gt;...&lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                </code></pre>
+            ]]></field>
+        </record>
+
+        <record id="lesson_web_css" model="elearning.lesson">
+            <field name="name">CSS3 Styling</field>
+            <field name="course_id" ref="course_webdesign"/>
+            <field name="sequence">20</field>
+            <field name="lesson_type">document</field>
+            <field name="duration_minutes">60</field>
+            <field name="is_published">True</field>
+            <field name="content"><![CDATA[
+                <h2>CSS Flexbox</h2>
+                <pre><code>
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+                </code></pre>
+            ]]></field>
+        </record>
+
+        <record id="lesson_web_responsive" model="elearning.lesson">
+            <field name="name">Responsive Design</field>
+            <field name="course_id" ref="course_webdesign"/>
+            <field name="sequence">30</field>
+            <field name="lesson_type">video</field>
+            <field name="video_url">https://www.youtube.com/watch?v=responsive</field>
+            <field name="duration_minutes">40</field>
+            <field name="is_published">True</field>
+        </record>
+
+        <record id="lesson_web_unpublished" model="elearning.lesson">
+            <field name="name">Advanced Animations (Coming Soon)</field>
+            <field name="course_id" ref="course_webdesign"/>
+            <field name="sequence">40</field>
+            <field name="lesson_type">video</field>
+            <field name="duration_minutes">50</field>
+            <field name="is_published">False</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- COURSE 3: Advanced Python (Advanced)        -->
+        <!-- ============================================ -->
+        
+        <record id="course_python_advanced" model="elearning.course">
+            <field name="name">Advanced Python Programming</field>
+            <field name="description">Take your Python skills to the next level with OOP, decorators, generators, and advanced patterns.</field>
+            <field name="instructor_id" ref="instructor_john"/>
+            <field name="category_id" ref="category_programming"/>
+            <field name="level">advanced</field>
+            <field name="price">99.99</field>
+            <field name="duration_hours">40</field>
+            <field name="is_published">True</field>
+            <field name="require_completion_percentage">90</field>
+            <field name="difficulty_score">85</field>
+        </record>
+
+        <record id="lesson_python_oop" model="elearning.lesson">
+            <field name="name">Object-Oriented Programming</field>
+            <field name="course_id" ref="course_python_advanced"/>
+            <field name="sequence">10</field>
+            <field name="lesson_type">video</field>
+            <field name="duration_minutes">60</field>
+            <field name="is_published">True</field>
+        </record>
+
+        <record id="lesson_python_decorators" model="elearning.lesson">
+            <field name="name">Decorators and Metaclasses</field>
+            <field name="course_id" ref="course_python_advanced"/>
+            <field name="sequence">20</field>
+            <field name="lesson_type">document</field>
+            <field name="duration_minutes">45</field>
+            <field name="is_published">True</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- COURSE 4: Free Course (No price)            -->
+        <!-- ============================================ -->
+        
+        <record id="course_intro_business" model="elearning.course">
+            <field name="name">Introduction to Business</field>
+            <field name="description">A free introductory course to business fundamentals. Perfect for entrepreneurs!</field>
+            <field name="instructor_id" ref="instructor_sarah"/>
+            <field name="category_id" ref="category_business"/>
+            <field name="level">beginner</field>
+            <field name="price">0</field>
+            <field name="duration_hours">5</field>
+            <field name="is_published">True</field>
+            <field name="require_completion_percentage">100</field>
+        </record>
+
+        <record id="lesson_business_intro" model="elearning.lesson">
+            <field name="name">What is Business?</field>
+            <field name="course_id" ref="course_intro_business"/>
+            <field name="sequence">10</field>
+            <field name="lesson_type">video</field>
+            <field name="duration_minutes">20</field>
+            <field name="is_published">True</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- ENROLLMENTS - Students taking courses       -->
+        <!-- ============================================ -->
+        
+        <!-- Alice: Completed Python course (100% progress) -->
+        <record id="enrollment_alice_python" model="elearning.enrollment">
+            <field name="course_id" ref="course_python"/>
+            <field name="student_id" ref="student_alice"/>
+            <field name="enrollment_date">2025-01-15</field>
+            <field name="status">completed</field>
+            <field name="progress">100</field>
+            <field name="final_score">95</field>
+            <field name="certificate_earned">True</field>
+            <field name="certificate_date">2025-02-20</field>
+            <field name="completed_lesson_ids" eval="[(6, 0, [ref('lesson_python_intro'), ref('lesson_python_variables'), ref('lesson_python_quiz')])]"/>
+        </record>
+
+        <!-- Alice: In progress Web Design (67% - 2 of 3 published lessons) -->
+        <record id="enrollment_alice_web" model="elearning.enrollment">
+            <field name="course_id" ref="course_webdesign"/>
+            <field name="student_id" ref="student_alice"/>
+            <field name="enrollment_date">2025-03-01</field>
+            <field name="status">active</field>
+            <field name="progress">66.67</field>
+            <field name="completed_lesson_ids" eval="[(6, 0, [ref('lesson_web_html'), ref('lesson_web_css')])]"/>
+        </record>
+
+        <!-- Bob: Just enrolled in Python (0% progress) -->
+        <record id="enrollment_bob_python" model="elearning.enrollment">
+            <field name="course_id" ref="course_python"/>
+            <field name="student_id" ref="student_bob"/>
+            <field name="enrollment_date">2025-12-01</field>
+            <field name="status">active</field>
+            <field name="progress">0</field>
+        </record>
+
+        <!-- Bob: Completed Web Design -->
+        <record id="enrollment_bob_web" model="elearning.enrollment">
+            <field name="course_id" ref="course_webdesign"/>
+            <field name="student_id" ref="student_bob"/>
+            <field name="enrollment_date">2025-06-15</field>
+            <field name="status">completed</field>
+            <field name="progress">100</field>
+            <field name="final_score">88</field>
+            <field name="certificate_earned">True</field>
+            <field name="certificate_date">2025-08-20</field>
+            <field name="completed_lesson_ids" eval="[(6, 0, [ref('lesson_web_html'), ref('lesson_web_css'), ref('lesson_web_responsive')])]"/>
+        </record>
+
+        <!-- Carol: Cancelled enrollment -->
+        <record id="enrollment_carol_python" model="elearning.enrollment">
+            <field name="course_id" ref="course_python"/>
+            <field name="student_id" ref="student_carol"/>
+            <field name="enrollment_date">2025-05-01</field>
+            <field name="status">cancelled</field>
+            <field name="progress">33.33</field>
+            <field name="completed_lesson_ids" eval="[(6, 0, [ref('lesson_python_intro')])]"/>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- CERTIFICATES - Earned by students           -->
+        <!-- ============================================ -->
+        
+        <record id="certificate_alice_python" model="elearning.certificate">
+            <field name="enrollment_id" ref="enrollment_alice_python"/>
+            <field name="grade">95</field>
+            <field name="issue_date">2025-02-20</field>
+            <field name="expiration_date">2026-02-20</field>
+            <field name="certificate_code">CERT-PY-001</field>
+            <field name="can_share">True</field>
+        </record>
+
+        <record id="certificate_bob_web" model="elearning.certificate">
+            <field name="enrollment_id" ref="enrollment_bob_web"/>
+            <field name="grade">88</field>
+            <field name="issue_date">2025-08-20</field>
+            <field name="expiration_date">2027-08-20</field>
+            <field name="certificate_code">CERT-WEB-001</field>
+            <field name="can_share">True</field>
+            <field name="shared_count">5</field>
+        </record>
+
+    </data>
+</odoo>

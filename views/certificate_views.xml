@@ -45,11 +45,58 @@
             </field>
         </record>
 
+        <!-- Certificate Kanban View -->
+        <record id="view_elearning_certificate_kanban" model="ir.ui.view">
+            <field name="name">elearning.certificate.kanban</field>
+            <field name="model">elearning.certificate</field>
+            <field name="arch" type="xml">
+                <kanban>
+                    <field name="name"/>
+                    <field name="student_id"/>
+                    <field name="course_id"/>
+                    <field name="grade"/>
+                    <field name="issue_date"/>
+                    <field name="is_valid"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click oe_kanban_card">
+                                <div class="o_kanban_content">
+                                    <div class="text-center mb-2">
+                                        <i class="fa fa-certificate fa-3x text-warning"/>
+                                    </div>
+                                    <div class="text-center font-weight-bold mb-2">
+                                        <field name="course_id"/>
+                                    </div>
+                                    <div class="text-center mb-2">
+                                        <field name="student_id"/>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-6 text-left">
+                                            <small class="text-muted">Grade</small><br/>
+                                            <strong><field name="grade"/>%</strong>
+                                        </div>
+                                        <div class="col-6 text-right">
+                                            <small class="text-muted">Issued</small><br/>
+                                            <field name="issue_date"/>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2 text-center">
+                                        <span t-if="record.is_valid.raw_value" class="badge badge-success">Valid</span>
+                                        <span t-if="!record.is_valid.raw_value" class="badge badge-danger">Expired</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
         <!-- Certificate Action -->
         <record id="action_elearning_certificate" model="ir.actions.act_window">
             <field name="name">Certificates</field>
             <field name="res_model">elearning.certificate</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">kanban,tree,form</field>
         </record>
 
         <!-- Menu Item -->

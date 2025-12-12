@@ -84,11 +84,65 @@
             </field>
         </record>
 
+        <!-- Lesson Kanban View -->
+        <record id="view_elearning_lesson_kanban" model="ir.ui.view">
+            <field name="name">elearning.lesson.kanban</field>
+            <field name="model">elearning.lesson</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="course_id" class="o_kanban_small_column">
+                    <field name="name"/>
+                    <field name="course_id"/>
+                    <field name="lesson_type"/>
+                    <field name="duration_minutes"/>
+                    <field name="is_published"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click">
+                                <div class="oe_kanban_content">
+                                    <div class="o_kanban_record_top">
+                                        <div class="o_kanban_record_headings">
+                                            <strong class="o_kanban_record_title"><field name="name"/></strong>
+                                        </div>
+                                        <div class="o_dropdown_kanban dropdown">
+                                            <a class="dropdown-toggle o-no-caret btn" role="button" data-toggle="dropdown" href="#" aria-label="Dropdown menu" title="Dropdown menu">
+                                                <span class="fa fa-ellipsis-v"/>
+                                            </a>
+                                            <div class="dropdown-menu" role="menu">
+                                                <a role="menuitem" type="edit" class="dropdown-item">Edit</a>
+                                                <a role="menuitem" type="delete" class="dropdown-item">Delete</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="o_kanban_record_body">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <span t-if="record.lesson_type.raw_value == 'video'" class="badge badge-primary"><i class="fa fa-video-camera"/> Video</span>
+                                                <span t-if="record.lesson_type.raw_value == 'document'" class="badge badge-info"><i class="fa fa-file-text"/> Document</span>
+                                                <span t-if="record.lesson_type.raw_value == 'quiz'" class="badge badge-warning"><i class="fa fa-question-circle"/> Quiz</span>
+                                            </div>
+                                        </div>
+                                        <div class="mt-2">
+                                            <i class="fa fa-clock-o" title="Duration"/> <field name="duration_minutes"/> min
+                                        </div>
+                                    </div>
+                                    <div class="o_kanban_record_bottom">
+                                        <div class="oe_kanban_bottom_left">
+                                            <field name="is_published" widget="boolean_toggle"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
         <!-- Lesson Action -->
         <record id="action_elearning_lesson" model="ir.actions.act_window">
             <field name="name">Lessons</field>
             <field name="res_model">elearning.lesson</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">kanban,tree,form</field>
         </record>
 
         <record id="action_course_recalculate_progress" model="ir.actions.server">

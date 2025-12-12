@@ -51,11 +51,65 @@
             </field>
         </record>
 
+        <!-- Enrollment Kanban View -->
+        <record id="view_elearning_enrollment_kanban" model="ir.ui.view">
+            <field name="name">elearning.enrollment.kanban</field>
+            <field name="model">elearning.enrollment</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="status">
+                    <field name="student_id"/>
+                    <field name="course_id"/>
+                    <field name="status"/>
+                    <field name="progress"/>
+                    <field name="enrollment_date"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="student_id"/>
+                                        </strong>
+                                        <small class="o_kanban_record_subtitle text-muted">
+                                            <field name="course_id"/>
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_body mt-2">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span>Progress</span>
+                                        <span class="font-weight-bold"><field name="progress"/>%</span>
+                                    </div>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar" role="progressbar" 
+                                            t-att-style="'width: ' + record.progress.raw_value + '%'" 
+                                            t-att-aria-valuenow="record.progress.raw_value" 
+                                            aria-valuemin="0" aria-valuemax="100">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_bottom mt-2">
+                                    <div class="oe_kanban_bottom_left">
+                                        <field name="enrollment_date"/>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <span t-if="record.status.raw_value == 'active'" class="badge badge-primary">Active</span>
+                                        <span t-if="record.status.raw_value == 'completed'" class="badge badge-success">Completed</span>
+                                        <span t-if="record.status.raw_value == 'cancelled'" class="badge badge-secondary">Cancelled</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
         <!-- Enrollment Action -->
         <record id="action_elearning_enrollment" model="ir.actions.act_window">
             <field name="name">Enrollments</field>
             <field name="res_model">elearning.enrollment</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">kanban,tree,form</field>
         </record>
 
         <!-- Server Action to Recalculate Progress -->

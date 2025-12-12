@@ -19,7 +19,7 @@ class CourseExtension(models.Model):
         ('advanced', 'Advanced'),
     ], string='Level', default='beginner')
     price = fields.Float(string='Price')
-    duration_hours = fields.Float(string='Duration (Hours)')
+    duration_hours = fields.Float(string='Duration (Hours)', compute='_compute_duration', store=True)
     is_published = fields.Boolean(string='Published', default=False)
     
     # Relations
@@ -40,6 +40,12 @@ class CourseExtension(models.Model):
     )
     difficulty_score = fields.Integer(string='Difficulty Score', default=50)
     
+    @api.depends('lessons.duration_minutes')
+    def _compute_duration(self):
+        for course in self:
+            total_minutes = sum(course.lessons.mapped('duration_minutes'))
+            course.duration_hours = total_minutes / 60.0
+
     @api.depends('enrollments')
     def _compute_student_count(self):
         for course in self:
