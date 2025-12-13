@@ -25,6 +25,15 @@ class EnrollmentExtension(models.Model):
     certificate_date = fields.Date(string='Certificate Date')
     final_score = fields.Float(string='Final Score (%)')
     
+    @api.model
+    def create(self, vals):
+        enrollment = super(EnrollmentExtension, self).create(vals)
+        # Send enrollment email
+        template = self.env.ref('odoo_Project2.mail_template_course_enrollment', raise_if_not_found=False)
+        if template:
+            template.send_mail(enrollment.id, force_send=True)
+        return enrollment
+
     def mark_lesson_complete(self, lesson_id):
         """Mark lesson as complete"""
         if lesson_id not in self.completed_lesson_ids.ids:
@@ -82,3 +91,8 @@ class EnrollmentExtension(models.Model):
             })
             self.certificate_earned = True
             self.certificate_date = fields.Date.today()
+            
+            # Send certificate email
+            template = self.env.ref('odoo_Project2.mail_template_course_completed', raise_if_not_found=False)
+            if template:
+                template.send_mail(self.id, force_send=True)

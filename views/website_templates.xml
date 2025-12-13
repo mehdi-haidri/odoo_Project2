@@ -95,6 +95,9 @@
                                                     <t t-elif="lesson.lesson_type == 'quiz'">
                                                         <i class="fa fa-question-circle"></i>
                                                     </t>
+                                                    <t t-elif="lesson.lesson_type == 'assignment'">
+                                                        <i class="fa fa-pencil-square-o"></i>
+                                                    </t>
                                                     <t t-else="">
                                                         <i class="fa fa-circle-o"></i>
                                                     </t>
@@ -241,6 +244,66 @@
                                                     </a>
                                                 </div>
                                             </div>
+                                        </div>
+                                    </t>
+
+                                    <!-- Assignment Content -->
+                                    <t t-if="lesson.lesson_type == 'assignment'">
+                                        <div class="mb-4">
+                                            <div class="alert alert-secondary">
+                                                <h4 class="alert-heading"><i class="fa fa-pencil-square-o"></i> Assignment</h4>
+                                                <div class="mb-3">
+                                                    <t t-raw="lesson.assignment_instructions"/>
+                                                </div>
+                                                
+                                                <t t-if="submission">
+                                                    <hr/>
+                                                    <h5>Your Submission</h5>
+                                                    <p>
+                                                        <strong>Status:</strong> 
+                                                        <span t-attf-class="badge badge-{{ 'success' if submission.state == 'graded' else 'warning' }}">
+                                                            <t t-esc="submission.state.capitalize()"/>
+                                                        </span>
+                                                        <br/>
+                                                        <strong>Submitted:</strong> <span t-field="submission.submitted_date"/>
+                                                    </p>
+                                                    
+                                                    <t t-if="submission.state == 'graded'">
+                                                        <div class="alert alert-success">
+                                                            <strong>Grade:</strong> <t t-esc="submission.grade"/>%
+                                                            <t t-if="submission.instructor_feedback">
+                                                                <br/>
+                                                                <strong>Feedback:</strong>
+                                                                <div class="mt-2">
+                                                                    <t t-raw="submission.instructor_feedback"/>
+                                                                </div>
+                                                            </t>
+                                                        </div>
+                                                    </t>
+                                                </t>
+                                            </div>
+                                            
+                                            <t t-if="not submission or submission.state != 'graded'">
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">Submit Assignment</h5>
+                                                        <form method="POST" t-attf-action="/elearning/lesson/{{ lesson.id }}/assignment/submit" enctype="multipart/form-data">
+                                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                            <div class="form-group">
+                                                                <label for="submission_file">Upload File</label>
+                                                                <input type="file" class="form-control-file" name="submission_file" required="required"/>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="submission_text">Notes (Optional)</label>
+                                                                <textarea class="form-control" name="submission_text" rows="3"></textarea>
+                                                            </div>
+                                                            <button type="submit" class="btn btn-primary">
+                                                                <i class="fa fa-upload"></i> Submit Assignment
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </t>
                                         </div>
                                     </t>
 

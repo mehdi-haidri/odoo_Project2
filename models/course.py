@@ -10,7 +10,7 @@ class CourseExtension(models.Model):
     description = fields.Text(string='Description')
     image = fields.Binary(string='Image')
     instructor_id = fields.Many2one('res.partner', string='Instructor')
-    category_id = fields.Many2one('elearning.category', string='Category')
+    category_id = fields.Many2one('elearning.category', string='Category', required=True)
     
     # Course details
     level = fields.Selection([
@@ -40,6 +40,20 @@ class CourseExtension(models.Model):
     )
     difficulty_score = fields.Integer(string='Difficulty Score', default=50)
     
+    # Stats for Kanban
+    lesson_count = fields.Integer(string='Content Count', compute='_compute_course_stats')
+    enrollment_inprogress_count = fields.Integer(string='In Progress', compute='_compute_course_stats')
+    enrollment_completed_count = fields.Integer(string='Completed', compute='_compute_course_stats')
+    rating = fields.Float(string='Rating', default=4.5)
+    rating_count = fields.Integer(string='Review Count', default=0)
+
+    @api.depends('lessons', 'enrollments.status')
+    def _compute_course_stats(self):
+        for course in self:
+            course.lesson_count = len(course.lessons)
+            course.enrollment_inprogress_count = len(course.enrollments.filtered(lambda e: e.status == 'active'))
+            course.enrollment_completed_count = len(course.enrollments.filtered(lambda e: e.status == 'completed'))
+
     @api.depends('lessons.duration_minutes')
     def _compute_duration(self):
         for course in self:
@@ -50,6 +64,14 @@ class CourseExtension(models.Model):
     def _compute_student_count(self):
         for course in self:
             course.student_count = len(course.enrollments)
+
+    def action_view_course(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_url',
+            'target': 'self',
+            'url': '/elearning/course/%d' % self.id,
+        }
 
     def write(self, vals):
         res = super(CourseExtension, self).write(vals)

@@ -8,18 +8,38 @@
             <field name="arch" type="xml">
                 <form string="Category">
                     <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="%(action_elearning_course)d" 
+                                    type="action" 
+                                    class="oe_stat_button" 
+                                    icon="fa-graduation-cap" 
+                                    context="{'search_default_category_id': id}">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_value"><field name="course_count"/></span>
+                                    <span class="o_stat_text">Courses</span>
+                                </div>
+                            </button>
+                        </div>
+                        <field name="image" widget="image" class="oe_avatar"/>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1><field name="name" placeholder="e.g. Development"/></h1>
+                        </div>
                         <group>
-                            <field name="name"/>
+                            <group>
+                                <field name="sequence"/>
+                            </group>
                         </group>
                         <notebook>
                             <page string="Description">
-                                <field name="description"/>
+                                <field name="description" placeholder="Add a description..."/>
                             </page>
                             <page string="Courses">
-                                <field name="courses">
+                                <field name="courses" readonly="1">
                                     <tree>
                                         <field name="name"/>
                                         <field name="instructor_id"/>
+                                        <field name="level"/>
                                         <field name="is_published"/>
                                     </tree>
                                 </field>
@@ -35,8 +55,10 @@
             <field name="name">elearning.category.tree</field>
             <field name="model">elearning.category</field>
             <field name="arch" type="xml">
-                <tree string="Categories" editable="bottom">
+                <tree string="Categories">
+                    <field name="sequence" widget="handle"/>
                     <field name="name"/>
+                    <field name="course_count"/>
                 </tree>
             </field>
         </record>
@@ -46,17 +68,25 @@
             <field name="name">elearning.category.kanban</field>
             <field name="model">elearning.category</field>
             <field name="arch" type="xml">
-                <kanban>
+                <kanban class="o_kanban_mobile">
+                    <field name="id"/>
                     <field name="name"/>
+                    <field name="image"/>
+                    <field name="course_count"/>
                     <templates>
                         <t t-name="kanban-box">
                             <div class="oe_kanban_global_click">
-                                <div class="oe_kanban_content">
-                                    <div class="o_kanban_record_top">
-                                        <div class="o_kanban_record_headings">
-                                            <strong class="o_kanban_record_title"><field name="name"/></strong>
-                                        </div>
-                                    </div>
+                                <div class="o_kanban_image">
+                                    <img t-att-src="kanban_image('elearning.category', 'image', record.id.raw_value)" alt="Category"/>
+                                </div>
+                                <div class="oe_kanban_details">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
+                                    <div class="o_kanban_tags_section"/>
+                                    <ul>
+                                        <li><field name="course_count"/> Courses</li>
+                                    </ul>
                                 </div>
                             </div>
                         </t>
@@ -65,11 +95,32 @@
             </field>
         </record>
 
+        <!-- Category Search View -->
+        <record id="view_elearning_category_search" model="ir.ui.view">
+            <field name="name">elearning.category.search</field>
+            <field name="model">elearning.category</field>
+            <field name="arch" type="xml">
+                <search string="Search Categories">
+                    <field name="name"/>
+                    <field name="description"/>
+                </search>
+            </field>
+        </record>
+
         <!-- Category Action -->
         <record id="action_elearning_category" model="ir.actions.act_window">
             <field name="name">Course Categories</field>
             <field name="res_model">elearning.category</field>
             <field name="view_mode">kanban,tree,form</field>
+            <field name="search_view_id" ref="view_elearning_category_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new course category
+                </p>
+                <p>
+                    Categories help you organize your courses.
+                </p>
+            </field>
         </record>
 
         <!-- Menu Item -->

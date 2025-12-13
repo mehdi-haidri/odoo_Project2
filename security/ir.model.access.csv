@@ -18,6 +18,9 @@ access_elearning_lesson_portal,Lesson Portal Access,model_elearning_lesson,base.
 access_elearning_enrollment_portal,Enrollment Portal Access,model_elearning_enrollment,base.group_portal,1,1,1,0
 access_elearning_certificate_portal,Certificate Portal Access,model_elearning_certificate,base.group_portal,1,0,0,0
 access_elearning_lesson_question_manager,Lesson Question Manager Access,model_elearning_lesson_question,base.group_system,1,1,1,1
+access_elearning_submission_user,Submission User Access,model_elearning_submission,base.group_user,1,1,1,0
+access_elearning_submission_manager,Submission Manager Access,model_elearning_submission,base.group_system,1,1,1,1
+access_elearning_submission_portal,Submission Portal Access,model_elearning_submission,base.group_portal,1,1,1,0
 access_elearning_lesson_question_user,Lesson Question User Access,model_elearning_lesson_question,base.group_user,1,0,0,0
 access_elearning_lesson_question_public,Lesson Question Public Access,model_elearning_lesson_question,base.group_public,1,0,0,0
 access_elearning_lesson_question_portal,Lesson Question Portal Access,model_elearning_lesson_question,base.group_portal,1,0,0,0

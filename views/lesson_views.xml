@@ -34,6 +34,9 @@
                                 <field name="document_file" filename="document_filename"/>
                                 <field name="document_filename" invisible="1"/>
                             </page>
+                            <page string="Assignment" invisible="lesson_type != 'assignment'">
+                                <field name="assignment_instructions"/>
+                            </page>
                             <page string="Quiz" invisible="lesson_type != 'quiz'">
                                 <field name="quiz_passing_score"/>
                                 <field name="question_ids">

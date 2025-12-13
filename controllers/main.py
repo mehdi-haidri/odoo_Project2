@@ -69,10 +69,58 @@ class ELearningController(http.Controller):
         if not enrollment:
             return request.redirect(f'/elearning/course/{lesson.course_id.id}')
         
+        # Get existing submission if any
+        submission = request.env['elearning.submission'].search([
+            ('lesson_id', '=', lesson_id),
+            ('student_id', '=', request.env.user.partner_id.id)
+        ], limit=1)
+
         return request.render('odoo_Project2.lesson_template', {
             'lesson': lesson,
             'enrollment': enrollment,
+            'submission': submission,
         })
+
+    @http.route('/elearning/lesson/<int:lesson_id>/assignment/submit', type='http', auth='user', methods=['POST'], website=True, csrf=True)
+    def submit_assignment(self, lesson_id, **kw):
+        """Handle assignment submission"""
+        lesson = request.env['elearning.lesson'].browse(lesson_id)
+        enrollment = request.env['elearning.enrollment'].search([
+            ('course_id', '=', lesson.course_id.id),
+            ('student_id', '=', request.env.user.partner_id.id)
+        ], limit=1)
+        
+        if not enrollment:
+            return request.redirect(f'/elearning/course/{lesson.course_id.id}')
+            
+        file = kw.get('submission_file')
+        notes = kw.get('submission_text')
+        
+        if file:
+            import base64
+            file_content = base64.b64encode(file.read())
+            
+            # Check for existing submission
+            submission = request.env['elearning.submission'].search([
+                ('lesson_id', '=', lesson_id),
+                ('student_id', '=', request.env.user.partner_id.id)
+            ], limit=1)
+            
+            vals = {
+                'lesson_id': lesson_id,
+                'student_id': request.env.user.partner_id.id,
+                'submission_file': file_content,
+                'submission_filename': file.filename,
+                'submission_text': notes,
+                'state': 'submitted',
+            }
+            
+            if submission:
+                submission.write(vals)
+            else:
+                request.env['elearning.submission'].create(vals)
+                
+        return request.redirect(f'/elearning/lesson/{lesson_id}')
 
     @http.route('/elearning/lesson/<int:lesson_id>/complete', type='http', auth='user', methods=['POST'], website=True)
     def complete_lesson(self, lesson_id, **kw):
@@ -154,7 +202,7 @@ class ELearningController(http.Controller):
             return request.redirect('/elearning/')
             
         # Find certificate
-        certificate = request.env['elearning.certificate'].search([
+        certificate = request.env['elearning.certificate'].sudo().search([
             ('enrollment_id', '=', enrollment.id)
         ], limit=1)
         

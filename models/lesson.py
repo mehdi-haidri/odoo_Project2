@@ -23,12 +23,16 @@ class Lesson(models.Model):
     lesson_type = fields.Selection([
         ('document', 'Document'),
         ('video', 'Video'),
-        ('quiz', 'Quiz')
+        ('quiz', 'Quiz'),
+        ('assignment', 'Assignment')
     ], string='Lesson Type', default='document', required=True)
     
     # Document Content
     document_file = fields.Binary(string='Document File')
     document_filename = fields.Char(string='Document Filename')
+
+    # Assignment Content
+    assignment_instructions = fields.Html(string='Assignment Instructions')
     
     # Quiz/Assessment
     has_quiz = fields.Boolean(string='Has Quiz')

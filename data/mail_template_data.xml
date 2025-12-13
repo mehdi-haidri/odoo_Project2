@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- 1. Enrollment Confirmation Template -->
+        <record id="mail_template_course_enrollment" model="mail.template">
+            <field name="name">Course Enrollment: Welcome</field>
+            <field name="model_id" ref="model_elearning_enrollment"/>
+            <field name="subject">Welcome to {{ object.course_id.name }}</field>
+            <field name="email_from">{{ (object.course_id.instructor_id.email_formatted or user.email_formatted) }}</field>
+            <field name="partner_to">{{ object.student_id.id }}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Hello <t t-out="object.student_id.name or ''">Student</t>,<br/><br/>
+                        You have successfully enrolled in the course <strong><t t-out="object.course_id.name or ''">Course Name</t></strong>.
+                        <br/><br/>
+                        We are excited to have you on board!
+                        <br/><br/>
+                        <div style="margin: 16px 0px 16px 0px;">
+                            <a t-attf-href="/elearning/course/{{ object.course_id.id }}"
+                                style="background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;">
+                                Go to Course
+                            </a>
+                        </div>
+                        <br/>
+                        Best regards,
+                        <br/>
+                        <t t-out="object.course_id.instructor_id.name or 'The Team'">The Team</t>
+                    </p>
+                </div>
+            </field>
+        </record>
+
+        <!-- 2. Assignment Submitted Template (To Instructor) -->
+        <record id="mail_template_assignment_submitted" model="mail.template">
+            <field name="name">Assignment: New Submission</field>
+            <field name="model_id" ref="model_elearning_submission"/>
+            <field name="subject">New Submission: {{ object.lesson_id.name }} - {{ object.student_id.name }}</field>
+            <field name="email_from">{{ object.student_id.email_formatted }}</field>
+            <field name="partner_to">{{ object.lesson_id.course_id.instructor_id.id }}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Hello <t t-out="object.lesson_id.course_id.instructor_id.name or 'Instructor'">Instructor</t>,<br/><br/>
+                        A new assignment has been submitted by <strong><t t-out="object.student_id.name or ''">Student</t></strong> 
+                        for the lesson <strong><t t-out="object.lesson_id.name or ''">Lesson</t></strong>.
+                        <br/><br/>
+                        Please review and grade it.
+                        <br/><br/>
+                        <div style="margin: 16px 0px 16px 0px;">
+                            <a t-attf-href="/web#id={{ object.id }}&amp;model=elearning.submission&amp;view_type=form"
+                                style="background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;">
+                                View Submission
+                            </a>
+                        </div>
+                    </p>
+                </div>
+            </field>
+        </record>
+
+        <!-- 3. Assignment Graded Template (To Student) -->
+        <record id="mail_template_assignment_graded" model="mail.template">
+            <field name="name">Assignment: Graded</field>
+            <field name="model_id" ref="model_elearning_submission"/>
+            <field name="subject">Assignment Graded: {{ object.lesson_id.name }}</field>
+            <field name="email_from">{{ (object.lesson_id.course_id.instructor_id.email_formatted or user.email_formatted) }}</field>
+            <field name="partner_to">{{ object.student_id.id }}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Hello <t t-out="object.student_id.name or ''">Student</t>,<br/><br/>
+                        Your assignment for <strong><t t-out="object.lesson_id.name or ''">Lesson</t></strong> has been graded.
+                        <br/><br/>
+                        <strong>Grade:</strong> <t t-out="object.grade">0</t>%
+                        <br/>
+                        <t t-if="object.instructor_feedback">
+                            <strong>Feedback:</strong><br/>
+                            <t t-out="object.instructor_feedback"/>
+                        </t>
+                        <br/><br/>
+                        <div style="margin: 16px 0px 16px 0px;">
+                            <a t-attf-href="/elearning/lesson/{{ object.lesson_id.id }}"
+                                style="background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;">
+                                View Result
+                            </a>
+                        </div>
+                    </p>
+                </div>
+            </field>
+        </record>
+
+        <!-- 4. Course Completed / Certificate Template -->
+        <record id="mail_template_course_completed" model="mail.template">
+            <field name="name">Course: Completed</field>
+            <field name="model_id" ref="model_elearning_enrollment"/>
+            <field name="subject">Congratulations! You completed {{ object.course_id.name }}</field>
+            <field name="email_from">{{ (object.course_id.instructor_id.email_formatted or user.email_formatted) }}</field>
+            <field name="partner_to">{{ object.student_id.id }}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Congratulations <t t-out="object.student_id.name or ''">Student</t>!<br/><br/>
+                        You have successfully completed the course <strong><t t-out="object.course_id.name or ''">Course Name</t></strong>.
+                        <br/><br/>
+                        Your certificate is ready for download.
+                        <br/><br/>
+                        <div style="margin: 16px 0px 16px 0px;">
+                            <a t-attf-href="/elearning/certificate/download/{{ object.id }}"
+                                style="background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;">
+                                Download Certificate
+                            </a>
+                        </div>
+                        <br/>
+                        Keep learning!
+                    </p>
+                </div>
+            </field>
+        </record>
+    </data>
+</odoo>

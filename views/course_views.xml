@@ -13,7 +13,7 @@
                                 <field name="name"/>
                                 <field name="image" widget="image" class="oe_avatar"/>
                                 <field name="instructor_id"/>
-                                <field name="category_id"/>
+                                <field name="category_id" required="1"/>
                             </group>
                             <group>
                                 <field name="level"/>
@@ -72,38 +72,73 @@
             <field name="name">elearning.course.kanban</field>
             <field name="model">elearning.course</field>
             <field name="arch" type="xml">
-                <kanban class="o_kanban_mobile">
+                <kanban class="o_elearning_kanban" create="true">
                     <field name="id"/>
                     <field name="name"/>
-                    <field name="image"/>
-                    <field name="instructor_id"/>
-                    <field name="level"/>
-                    <field name="student_count"/>
                     <field name="is_published"/>
+                    <field name="lesson_count"/>
+                    <field name="duration_hours"/>
+                    <field name="rating"/>
+                    <field name="rating_count"/>
+                    <field name="enrollment_inprogress_count"/>
+                    <field name="enrollment_completed_count"/>
+                    <field name="student_count"/>
                     <templates>
                         <t t-name="kanban-box">
-                            <div t-attf-class="oe_kanban_global_click oe_kanban_card">
-                                <div class="o_kanban_image">
-                                    <img t-att-src="kanban_image('elearning.course', 'image', record.id.raw_value)" alt="Course Image" class="o_image_64_cover"/>
+                            <div t-attf-class="oe_kanban_global_click oe_kanban_card oe_kanban_content p-0">
+                                <!-- Ribbon -->
+                                <div t-if="record.is_published.raw_value" class="ribbon ribbon-top-right">
+                                    <span class="bg-success">Published</span>
                                 </div>
-                                <div class="oe_kanban_details">
-                                    <strong class="o_kanban_record_title">
-                                        <field name="name"/>
-                                    </strong>
-                                    <div class="o_kanban_tags_section">
-                                        <span t-if="record.level.raw_value == 'beginner'" class="badge badge-success">Beginner</span>
-                                        <span t-if="record.level.raw_value == 'intermediate'" class="badge badge-warning">Intermediate</span>
-                                        <span t-if="record.level.raw_value == 'advanced'" class="badge badge-danger">Advanced</span>
+                                <div t-if="!record.is_published.raw_value" class="ribbon ribbon-top-right">
+                                    <span class="bg-danger">Unpublished</span>
+                                </div>
+
+                                <div class="o_kanban_content p-3">
+                                    <div class="o_kanban_card_header mb-3">
+                                        <div class="o_kanban_card_header_title">
+                                            <h3 class="o_primary mt-0"><field name="name"/></h3>
+                                        </div>
                                     </div>
-                                    <div class="mt-2">
-                                        <div class="float-right">
-                                            <field name="is_published" widget="boolean_toggle"/>
+                                    
+                                    <div class="container-fluid p-0">
+                                        <div class="row mb-3">
+                                            <div class="col-6">
+                                                <button class="btn btn-primary btn-sm" name="action_view_course" type="object">
+                                                    View Course
+                                                </button>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="row">
+                                                    <div class="col-6 text-muted small">Contents</div>
+                                                    <div class="col-6 text-right small font-weight-bold"><field name="lesson_count"/></div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6 text-muted small">Duration</div>
+                                                    <div class="col-6 text-right small font-weight-bold">
+                                                        <t t-esc="Math.floor(record.duration_hours.raw_value)"/>:<t t-esc="Math.round((record.duration_hours.raw_value % 1) * 60).toString().padStart(2, '0')"/>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6 text-muted small">Rating</div>
+                                                    <div class="col-6 text-right small font-weight-bold"><field name="rating"/> / 5</div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <i class="fa fa-user" title="Instructor"/> <field name="instructor_id"/>
-                                        </div>
-                                        <div>
-                                            <i class="fa fa-users" title="Students"/> <field name="student_count"/> Students
+                                        
+                                        <div class="row border-top pt-2 mt-2">
+                                            <div class="col-4 border-right text-center">
+                                                <div class="font-weight-bold"><field name="enrollment_inprogress_count"/></div>
+                                                <div class="text-muted small">In Progress</div>
+                                            </div>
+                                            <div class="col-4 border-right text-center">
+                                                <div class="font-weight-bold"><field name="enrollment_completed_count"/></div>
+                                                <div class="text-muted small">Completed</div>
+                                            </div>
+                                            <div class="col-4 text-center">
+                                                <div class="font-weight-bold"><field name="student_count"/></div>
+                                                <div class="text-muted small">Total</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
