@@ -52,6 +52,24 @@
             </field>
         </record>
 
+        <!-- Submission Search View -->
+        <record id="view_elearning_submission_search" model="ir.ui.view">
+            <field name="name">elearning.submission.search</field>
+            <field name="model">elearning.submission</field>
+            <field name="arch" type="xml">
+                <search string="Search Submissions">
+                    <field name="student_id"/>
+                    <field name="lesson_id"/>
+                    <field name="state"/>
+                    <group expand="1" string="Group By">
+                        <filter string="Student" name="group_by_student" context="{'group_by':'student_id'}"/>
+                        <filter string="Lesson" name="group_by_lesson" context="{'group_by':'lesson_id'}"/>
+                        <filter string="State" name="group_by_state" context="{'group_by':'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
         <!-- Submission Action -->
         <record id="action_elearning_submission" model="ir.actions.act_window">
             <field name="name">Submissions</field>

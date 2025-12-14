@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_course_review_tree" model="ir.ui.view">
+        <field name="name">elearning.course.review.tree</field>
+        <field name="model">elearning.course.review</field>
+        <field name="arch" type="xml">
+            <tree string="Course Reviews">
+                <field name="create_date"/>
+                <field name="course_id"/>
+                <field name="user_id"/>
+                <field name="rating"/>
+                <field name="comment"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_course_review_form" model="ir.ui.view">
+        <field name="name">elearning.course.review.form</field>
+        <field name="model">elearning.course.review</field>
+        <field name="arch" type="xml">
+            <form string="Course Review">
+                <sheet>
+                    <group>
+                        <field name="course_id"/>
+                        <field name="user_id"/>
+                        <field name="rating"/>
+                        <field name="create_date" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="comment"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_course_review_search" model="ir.ui.view">
+        <field name="name">elearning.course.review.search</field>
+        <field name="model">elearning.course.review</field>
+        <field name="arch" type="xml">
+            <search string="Search Reviews">
+                <field name="course_id"/>
+                <field name="user_id"/>
+                <field name="comment"/>
+                <field name="rating"/>
+                <group expand="1" string="Group By">
+                    <filter string="Course" name="group_by_course" context="{'group_by':'course_id'}"/>
+                    <filter string="User" name="group_by_user" context="{'group_by':'user_id'}"/>
+                    <filter string="Rating" name="group_by_rating" context="{'group_by':'rating'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_course_review" model="ir.actions.act_window">
+        <field name="name">Reviews</field>
+        <field name="res_model">elearning.course.review</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_elearning_reviews"
+              name="Reviews"
+              parent="odoo_Project2.menu_elearning"
+              action="action_course_review"
+              sequence="50"/>
+</odoo>

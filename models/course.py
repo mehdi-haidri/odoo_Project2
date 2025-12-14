@@ -44,8 +44,20 @@ class CourseExtension(models.Model):
     lesson_count = fields.Integer(string='Content Count', compute='_compute_course_stats')
     enrollment_inprogress_count = fields.Integer(string='In Progress', compute='_compute_course_stats')
     enrollment_completed_count = fields.Integer(string='Completed', compute='_compute_course_stats')
-    rating = fields.Float(string='Rating', default=4.5)
-    rating_count = fields.Integer(string='Review Count', default=0)
+    
+    review_ids = fields.One2many('elearning.course.review', 'course_id', string='Reviews')
+    rating = fields.Float(string='Rating', compute='_compute_rating', store=True)
+    rating_count = fields.Integer(string='Review Count', compute='_compute_rating', store=True)
+
+    @api.depends('review_ids.rating')
+    def _compute_rating(self):
+        for course in self:
+            if course.review_ids:
+                course.rating = sum(int(r.rating) for r in course.review_ids) / len(course.review_ids)
+                course.rating_count = len(course.review_ids)
+            else:
+                course.rating = 0.0
+                course.rating_count = 0
 
     @api.depends('lessons', 'enrollments.status')
     def _compute_course_stats(self):

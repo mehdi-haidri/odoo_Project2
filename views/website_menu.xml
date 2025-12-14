@@ -8,5 +8,13 @@
             <field name="parent_id" ref="website.main_menu"/>
             <field name="sequence">50</field>
         </record>
+
+        <!-- Website Menu Item for My Courses -->
+        <record id="website_elearning_my_courses_menu" model="website.menu">
+            <field name="name">My Courses</field>
+            <field name="url">/elearning/my_courses</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence">51</field>
+        </record>
     </data>
 </odoo>

@@ -18,6 +18,7 @@
         'views/certificate_views.xml',
         'views/submission_views.xml',
         'views/certificate_report.xml',
+        'views/review_views.xml',
         'views/menuitems.xml',
         'views/website_menu.xml',
         'views/website_templates.xml',

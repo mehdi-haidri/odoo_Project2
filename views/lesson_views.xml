@@ -18,6 +18,7 @@
                             <group>
                                 <field name="duration_minutes"/>
                                 <field name="is_published"/>
+                                <field name="is_preview" invisible="lesson_type not in ('video', 'document')"/>
                             </group>
                         </group>
                         <notebook>

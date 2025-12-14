@@ -56,7 +56,6 @@
                                     
                                     <!-- Details -->
                                     <div style="margin-top: 30px; font-size: 18px; color: #555;">
-                                        <p>with a final grade of <strong><span t-field="o.grade"/>%</strong></p>
                                         <p>Course Duration: <span t-field="o.course_id.duration_hours"/> Hours</p>
                                     </div>
                                     

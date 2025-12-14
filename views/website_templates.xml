@@ -5,9 +5,33 @@
             <div id="elearning_courses" class="elearning-container">
                 <div class="container">
                     <div class="row mb-5">
-                        <div class="col-lg-8">
-                            <h1 class="mb-3">Online Courses</h1>
-                            <p class="lead text-muted">Learn new skills at your own pace with our comprehensive courses</p>
+                        <div class="col-lg-6">
+                            <h1 class="mb-3">
+                                <t t-if="my_courses_mode">My Courses</t>
+                                <t t-else="">Online Courses</t>
+                            </h1>
+                            <p class="lead text-muted">
+                                <t t-if="my_courses_mode">Continue learning where you left off</t>
+                                <t t-else="">Learn new skills at your own pace with our comprehensive courses</t>
+                            </p>
+                        </div>
+                        <div class="col-lg-6">
+                            <form method="get" class="card p-3 bg-light border-0">
+                                <div class="input-group mb-2">
+                                    <input type="text" name="search" class="form-control" placeholder="Search courses..." t-att-value="search_term"/>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col">
+                                        <input type="number" name="min_price" class="form-control form-control-sm" placeholder="Min Price" t-att-value="min_price"/>
+                                    </div>
+                                    <div class="col">
+                                        <input type="number" name="max_price" class="form-control form-control-sm" placeholder="Max Price" t-att-value="max_price"/>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                     
@@ -39,11 +63,23 @@
                                             </p>
                                             <p class="card-text flex-grow-1"><t t-raw="course.description"/></p>
                                             <div class="mt-auto">
-                                                <t t-if="course.price > 0">
+                                                <t t-if="enrolled_course_ids and course.id in enrolled_course_ids">
+                                                    <p class="h5 text-success mb-3"><i class="fa fa-check-circle"></i> Enrolled</p>
+                                                </t>
+                                                <t t-elif="course.price > 0">
                                                     <p class="h5 text-primary mb-3">$<t t-esc="'{:.2f}'.format(course.price)"/></p>
                                                 </t>
+                                                <t t-else="">
+                                                    <p class="h5 text-success mb-3">Free</p>
+                                                </t>
+                                                
                                                 <a t-attf-href="/elearning/course/{{ course.id }}" class="btn btn-primary btn-block">
-                                                    <i class="fa fa-arrow-right"></i> View Course
+                                                    <t t-if="enrolled_course_ids and course.id in enrolled_course_ids">
+                                                        <i class="fa fa-play-circle"></i> Continue Learning
+                                                    </t>
+                                                    <t t-else="">
+                                                        <i class="fa fa-arrow-right"></i> View Course
+                                                    </t>
                                                 </a>
                                             </div>
                                         </div>
@@ -70,6 +106,11 @@
                         <div class="col-lg-8">
                             <h1 class="mb-3"><t t-esc="course.name"/></h1>
                             <div class="mb-3">
+                                <span class="text-warning font-weight-bold">
+                                    <t t-esc="'{:.1f}'.format(course.rating)"/> <i class="fa fa-star"></i>
+                                </span>
+                                <span class="text-muted ml-1 mr-3">(<t t-esc="course.rating_count"/> reviews)</span>
+                                
                                 <span t-attf-class="elearning-course-level level-{{ course.level }} mr-2">
                                     <span t-field="course.level"/>
                                 </span>
@@ -82,52 +123,117 @@
                             <h3 class="mb-3">Course Content</h3>
                             <ul class="elearning-lesson-list">
                                 <t t-foreach="course.lessons" t-as="lesson">
-                                    <li class="elearning-lesson-item" t-if="lesson.is_published">
-                                        <div>
-                                            <t t-if="enrollment">
-                                                <a t-attf-href="/elearning/lesson/{{ lesson.id }}">
-                                                    <t t-if="lesson.lesson_type == 'video'">
-                                                        <i class="fa fa-play-circle"></i>
+                                    <t t-set="is_completed" t-value="enrollment and lesson.id in enrollment.completed_lesson_ids.ids"/>
+                                    <li t-attf-class="elearning-lesson-item {{ 'completed' if is_completed else '' }}" t-if="lesson.is_published">
+                                        <div class="d-flex align-items-center w-100">
+                                            <t t-if="enrollment or lesson.is_preview">
+                                                <a t-attf-href="/elearning/lesson/{{ lesson.id }}" class="d-flex align-items-center flex-grow-1">
+                                                    <span class="elearning-lesson-icon">
+                                                        <t t-if="is_completed">
+                                                            <i class="fa fa-check-circle text-success"></i>
+                                                        </t>
+                                                        <t t-elif="lesson.lesson_type == 'video'">
+                                                            <i class="fa fa-play-circle"></i>
+                                                        </t>
+                                                        <t t-elif="lesson.lesson_type == 'document'">
+                                                            <i class="fa fa-file-text-o"></i>
+                                                        </t>
+                                                        <t t-elif="lesson.lesson_type == 'quiz'">
+                                                            <i class="fa fa-question-circle"></i>
+                                                        </t>
+                                                        <t t-elif="lesson.lesson_type == 'assignment'">
+                                                            <i class="fa fa-pencil-square-o"></i>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <i class="fa fa-circle-o"></i>
+                                                        </t>
+                                                    </span>
+                                                    
+                                                    <span t-att-class="'text-muted' if is_completed else ''">
+                                                        <t t-esc="lesson.name"/>
+                                                    </span>
+                                                    
+                                                    <t t-if="lesson.is_preview and not enrollment">
+                                                        <span class="badge badge-info ml-2">Preview</span>
                                                     </t>
-                                                    <t t-elif="lesson.lesson_type == 'document'">
-                                                        <i class="fa fa-file-text-o"></i>
-                                                    </t>
-                                                    <t t-elif="lesson.lesson_type == 'quiz'">
-                                                        <i class="fa fa-question-circle"></i>
-                                                    </t>
-                                                    <t t-elif="lesson.lesson_type == 'assignment'">
-                                                        <i class="fa fa-pencil-square-o"></i>
-                                                    </t>
-                                                    <t t-else="">
-                                                        <i class="fa fa-circle-o"></i>
-                                                    </t>
-                                                    <t t-esc="lesson.name"/>
                                                 </a>
                                             </t>
                                             <t t-else="">
-                                                <span class="text-muted" title="Enroll to access">
-                                                    <t t-if="lesson.lesson_type == 'video'">
-                                                        <i class="fa fa-play-circle"></i>
-                                                    </t>
-                                                    <t t-elif="lesson.lesson_type == 'document'">
-                                                        <i class="fa fa-file-text-o"></i>
-                                                    </t>
-                                                    <t t-elif="lesson.lesson_type == 'quiz'">
-                                                        <i class="fa fa-question-circle"></i>
-                                                    </t>
-                                                    <t t-else="">
+                                                <div class="d-flex align-items-center text-muted flex-grow-1" title="Enroll to access">
+                                                    <span class="elearning-lesson-icon">
                                                         <i class="fa fa-lock"></i>
-                                                    </t>
+                                                    </span>
                                                     <t t-esc="lesson.name"/>
-                                                </span>
+                                                </div>
                                             </t>
+                                            
+                                            <span class="text-muted small ml-3 whitespace-nowrap">
+                                                <i class="fa fa-clock-o mr-1"></i><t t-esc="lesson.duration_minutes"/> min
+                                            </span>
                                         </div>
-                                        <span class="text-muted">
-                                            <i class="fa fa-clock-o"></i> <t t-esc="lesson.duration_minutes"/> min
-                                        </span>
                                     </li>
                                 </t>
                             </ul>
+                            
+                            <hr class="mt-5"/>
+                            <h3 class="mb-4">Reviews</h3>
+                            
+                            <div class="mb-5">
+                                <t t-if="reviews">
+                                    <t t-foreach="reviews" t-as="review">
+                                        <div class="media mb-4 border-bottom pb-3">
+                                            <div class="media-body">
+                                                <h5 class="mt-0">
+                                                    <t t-esc="review.user_id.name"/>
+                                                    <small class="text-muted ml-2">
+                                                        <t t-foreach="range(int(review.rating))" t-as="i">
+                                                            <i class="fa fa-star text-warning"></i>
+                                                        </t>
+                                                        <t t-foreach="range(5 - int(review.rating))" t-as="i">
+                                                            <i class="fa fa-star-o text-warning"></i>
+                                                        </t>
+                                                    </small>
+                                                </h5>
+                                                <p><t t-esc="review.comment"/></p>
+                                                <small class="text-muted"><t t-esc="review.create_date"/></small>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </t>
+                                <t t-else="">
+                                    <p class="text-muted">No reviews yet. Be the first to review!</p>
+                                </t>
+                            </div>
+
+                            <t t-if="enrollment and not user_review">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Write a Review</h5>
+                                        <form method="POST" action="/elearning/course/review/submit">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input type="hidden" name="course_id" t-att-value="course.id"/>
+                                            
+                                            <div class="form-group">
+                                                <label>Rating</label>
+                                                <select name="rating" class="form-control" required="required">
+                                                    <option value="5">5 Stars</option>
+                                                    <option value="4">4 Stars</option>
+                                                    <option value="3">3 Stars</option>
+                                                    <option value="2">2 Stars</option>
+                                                    <option value="1">1 Star</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label>Comment</label>
+                                                <textarea name="comment" class="form-control" rows="3" placeholder="Share your experience..."></textarea>
+                                            </div>
+                                            
+                                            <button type="submit" class="btn btn-primary">Submit Review</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </t>
                         </div>
                         <div class="col-lg-4">
                             <div class="card sticky-top" style="top: 20px;">
@@ -150,20 +256,19 @@
                                             </p>
                                         </div>
                                         <t t-if="enrollment.status == 'completed'">
-                                            <div class="alert alert-success mb-3">
-                                                <i class="fa fa-trophy"></i> Course Completed!
+                                            <div class="text-center mt-4 mb-3 p-3 bg-light rounded border">
+                                                <div class="mb-3">
+                                                    <i class="fa fa-trophy fa-4x text-warning"></i>
+                                                </div>
+                                                <h5 class="text-success font-weight-bold">Congratulations!</h5>
+                                                <p class="text-muted small">You have successfully completed this course.</p>
+                                                <a t-attf-href="/elearning/certificate/download/{{ enrollment.id }}" class="btn btn-success btn-block shadow-sm">
+                                                    <i class="fa fa-download mr-1"></i> Download Certificate
+                                                </a>
                                             </div>
-                                            <a t-attf-href="/elearning/certificate/download/{{ enrollment.id }}" class="btn btn-success btn-block mb-2">
-                                                <i class="fa fa-download"></i> Download Certificate
-                                            </a>
-                                        </t>
-                                        <t t-if="enrollment.status != 'completed'">
-                                            <a href="#" class="btn btn-primary btn-block">Continue Learning</a>
                                         </t>
                                         <t t-else="">
-                                            <div class="alert alert-success mb-0">
-                                                <i class="fa fa-check"></i> Course Completed!
-                                            </div>
+                                            <a href="#" class="btn btn-primary btn-block mt-3">Continue Learning</a>
                                         </t>
                                     </t>
                                     <t t-else="">
@@ -308,7 +413,7 @@
                                     </t>
 
                                     <!-- Quiz Content -->
-                                    <t t-if="lesson.lesson_type == 'quiz'">
+                                    <t t-if="lesson.lesson_type == 'quiz' and enrollment">
                                         <div class="mb-4">
                                             <div class="alert alert-warning">
                                                 <h4 class="alert-heading"><i class="fa fa-question-circle"></i> Quiz</h4>
@@ -444,10 +549,20 @@
                                 <ul class="list-group list-group-flush">
                                     <t t-foreach="lesson.course_id.lessons" t-as="l">
                                         <li t-attf-class="list-group-item {'active' if l.id == lesson.id else ''}">
-                                            <a t-attf-href="/elearning/lesson/{{ l.id }}" 
-                                               t-attf-class="{'text-white' if l.id == lesson.id else ''}">
-                                                <t t-esc="l.name"/>
-                                            </a>
+                                            <t t-if="enrollment or l.is_preview">
+                                                <a t-attf-href="/elearning/lesson/{{ l.id }}" 
+                                                   t-attf-class="{'text-white' if l.id == lesson.id else ''}">
+                                                    <t t-esc="l.name"/>
+                                                    <t t-if="l.is_preview and not enrollment">
+                                                        <span class="badge badge-light ml-1" style="font-size: 0.7em;">Preview</span>
+                                                    </t>
+                                                </a>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="text-muted">
+                                                    <i class="fa fa-lock"></i> <t t-esc="l.name"/>
+                                                </span>
+                                            </t>
                                         </li>
                                     </t>
                                 </ul>

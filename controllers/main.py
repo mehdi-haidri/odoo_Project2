@@ -7,9 +7,82 @@ class ELearningController(http.Controller):
     @http.route('/elearning/', type='http', auth='public', website=True)
     def courses_list(self, **kw):
         """Display list of available courses"""
-        courses = request.env['elearning.course'].sudo().search([('is_published', '=', True)])
+        search = kw.get('search')
+        min_price = kw.get('min_price')
+        max_price = kw.get('max_price')
+        
+        domain = [('is_published', '=', True)]
+        
+        if search:
+            search = search.strip()
+            if search:
+                domain.append(('name', 'ilike', search))
+            
+        if min_price:
+            try:
+                domain.append(('price', '>=', float(min_price)))
+            except ValueError:
+                pass
+                
+        if max_price:
+            try:
+                domain.append(('price', '<=', float(max_price)))
+            except ValueError:
+                pass
+
+        courses = request.env['elearning.course'].sudo().search(domain)
+        
+        enrolled_course_ids = []
+        if not request.env.user._is_public():
+            enrolled_course_ids = request.env['elearning.enrollment'].search([
+                ('student_id', '=', request.env.user.partner_id.id)
+            ]).mapped('course_id.id')
+            
         return request.render('odoo_Project2.courses_template', {
             'courses': courses,
+            'enrolled_course_ids': enrolled_course_ids,
+            'search_term': search,
+            'min_price': min_price,
+            'max_price': max_price,
+        })
+
+    @http.route('/elearning/my_courses', type='http', auth='user', website=True)
+    def my_courses(self, **kw):
+        """Display list of enrolled courses"""
+        search = kw.get('search')
+        min_price = kw.get('min_price')
+        max_price = kw.get('max_price')
+
+        enrollments = request.env['elearning.enrollment'].search([
+            ('student_id', '=', request.env.user.partner_id.id)
+        ])
+        courses = enrollments.mapped('course_id').sudo()
+        
+        # Filter in python since we have a recordset of courses from enrollments
+        if search:
+            search = search.strip()
+            if search:
+                courses = courses.filtered(lambda c: search.lower() in c.name.lower())
+            
+        if min_price:
+            try:
+                courses = courses.filtered(lambda c: c.price >= float(min_price))
+            except ValueError:
+                pass
+                
+        if max_price:
+            try:
+                courses = courses.filtered(lambda c: c.price <= float(max_price))
+            except ValueError:
+                pass
+        
+        return request.render('odoo_Project2.courses_template', {
+            'courses': courses,
+            'enrolled_course_ids': courses.ids,
+            'my_courses_mode': True,
+            'search_term': search,
+            'min_price': min_price,
+            'max_price': max_price,
         })
 
     @http.route('/elearning/course/<int:course_id>', type='http', auth='public', website=True)
@@ -27,10 +100,52 @@ class ELearningController(http.Controller):
                 ('student_id', '=', request.env.user.partner_id.id)
             ], limit=1)
         
+        # Get reviews
+        reviews = request.env['elearning.course.review'].search([('course_id', '=', course_id)])
+        user_review = False
+        if not request.env.user._is_public():
+            user_review = request.env['elearning.course.review'].search([
+                ('course_id', '=', course_id),
+                ('user_id', '=', request.env.user.id)
+            ], limit=1)
+
         return request.render('odoo_Project2.course_detail_template', {
             'course': course,
             'enrollment': enrollment,
+            'reviews': reviews,
+            'user_review': user_review,
         })
+
+    @http.route('/elearning/course/review/submit', type='http', auth='user', methods=['POST'], website=True)
+    def submit_review(self, **kw):
+        course_id = int(kw.get('course_id'))
+        rating = kw.get('rating')
+        comment = kw.get('comment')
+        
+        # Check enrollment
+        enrollment = request.env['elearning.enrollment'].search([
+            ('course_id', '=', course_id),
+            ('student_id', '=', request.env.user.partner_id.id)
+        ], limit=1)
+        
+        if not enrollment:
+             return request.redirect(f'/elearning/course/{course_id}')
+
+        # Check existing review
+        existing_review = request.env['elearning.course.review'].search([
+            ('course_id', '=', course_id),
+            ('user_id', '=', request.env.user.id)
+        ], limit=1)
+        
+        if not existing_review:
+            request.env['elearning.course.review'].create({
+                'course_id': course_id,
+                'user_id': request.env.user.id,
+                'rating': rating,
+                'comment': comment,
+            })
+            
+        return request.redirect(f'/elearning/course/{course_id}')
 
     @http.route('/elearning/enroll/<int:course_id>', type='http', auth='user', methods=['POST'], website=True)
     def enroll_course(self, course_id, **kw):
@@ -53,27 +168,35 @@ class ELearningController(http.Controller):
         
         return request.redirect(f'/elearning/course/{course_id}')
 
-    @http.route('/elearning/lesson/<int:lesson_id>', type='http', auth='user', website=True)
+    @http.route('/elearning/lesson/<int:lesson_id>', type='http', auth='public', website=True)
     def lesson_view(self, lesson_id, **kw):
         """Display lesson content"""
-        lesson = request.env['elearning.lesson'].browse(lesson_id)
+        lesson = request.env['elearning.lesson'].sudo().browse(lesson_id)
         
         if not lesson.exists() or not lesson.is_published:
-            return request.redirect(f'/elearning/course/{lesson.course_id.id}')
+            if lesson.exists():
+                return request.redirect(f'/elearning/course/{lesson.course_id.id}')
+            return request.render('website.404')
 
-        enrollment = request.env['elearning.enrollment'].search([
-            ('course_id', '=', lesson.course_id.id),
-            ('student_id', '=', request.env.user.partner_id.id)
-        ], limit=1)
+        # Check enrollment
+        enrollment = False
+        if not request.env.user._is_public():
+            enrollment = request.env['elearning.enrollment'].search([
+                ('course_id', '=', lesson.course_id.id),
+                ('student_id', '=', request.env.user.partner_id.id)
+            ], limit=1)
         
-        if not enrollment:
+        # Access check: Must be enrolled OR lesson must be a preview
+        if not enrollment and not lesson.is_preview:
             return request.redirect(f'/elearning/course/{lesson.course_id.id}')
         
-        # Get existing submission if any
-        submission = request.env['elearning.submission'].search([
-            ('lesson_id', '=', lesson_id),
-            ('student_id', '=', request.env.user.partner_id.id)
-        ], limit=1)
+        # Get existing submission if any (only for logged in users)
+        submission = False
+        if not request.env.user._is_public():
+            submission = request.env['elearning.submission'].search([
+                ('lesson_id', '=', lesson_id),
+                ('student_id', '=', request.env.user.partner_id.id)
+            ], limit=1)
 
         return request.render('odoo_Project2.lesson_template', {
             'lesson': lesson,

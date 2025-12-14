@@ -18,6 +18,7 @@ class Lesson(models.Model):
     duration_minutes = fields.Integer(string='Duration (Minutes)')
     
     is_published = fields.Boolean(string='Published', default=False)
+    is_preview = fields.Boolean(string='Preview Available', default=False, help="Allow anyone to view this lesson without enrollment")
     
     # Content Type
     lesson_type = fields.Selection([
