@@ -7,6 +7,7 @@
     'license': 'LGPL-3',
     'depends': ['website', 'web', 'website_slides', 'mail', 'base'],
     'data': [
+        'security/security.xml',
         'security/ir.model.access.csv',
         'data/paperformat.xml',
         'data/mail_template_data.xml',

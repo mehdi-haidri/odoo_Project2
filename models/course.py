@@ -9,7 +9,7 @@ class CourseExtension(models.Model):
     name = fields.Char(string='Course Name', required=True)
     description = fields.Text(string='Description')
     image = fields.Binary(string='Image')
-    instructor_id = fields.Many2one('res.partner', string='Instructor')
+    instructor_id = fields.Many2one('res.partner', string='Instructor', default=lambda self: self.env.user.partner_id, required=True)
     category_id = fields.Many2one('elearning.category', string='Category', required=True)
     
     # Course details

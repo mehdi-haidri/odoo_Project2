@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.module.category" id="module_category_elearning">
+            <field name="name">E-Learning Management</field>
+            <field name="description">Manage courses, lessons, and enrollments.</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="group_elearning_teacher" model="res.groups">
+            <field name="name">Teacher</field>
+            <field name="category_id" ref="module_category_elearning"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="group_elearning_manager" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="category_id" ref="module_category_elearning"/>
+            <field name="implied_ids" eval="[(4, ref('group_elearning_teacher'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+    </data>
+    
+    <data noupdate="1">
+        <!-- Record Rules -->
+        
+        <!-- Course Rules -->
+        <record id="elearning_course_rule_teacher" model="ir.rule">
+            <field name="name">Teacher: Own Courses</field>
+            <field name="model_id" ref="model_elearning_course"/>
+            <field name="domain_force">[('instructor_id', '=', user.partner_id.id)]</field>
+            <field name="groups" eval="[(4, ref('group_elearning_teacher'))]"/>
+        </record>
+        
+        <record id="elearning_course_rule_manager" model="ir.rule">
+            <field name="name">Manager: All Courses</field>
+            <field name="model_id" ref="model_elearning_course"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_elearning_manager'))]"/>
+        </record>
+
+        <!-- Lesson Rules -->
+        <record id="elearning_lesson_rule_teacher" model="ir.rule">
+            <field name="name">Teacher: Own Lessons</field>
+            <field name="model_id" ref="model_elearning_lesson"/>
+            <field name="domain_force">[('course_id.instructor_id', '=', user.partner_id.id)]</field>
+            <field name="groups" eval="[(4, ref('group_elearning_teacher'))]"/>
+        </record>
+        
+        <record id="elearning_lesson_rule_manager" model="ir.rule">
+            <field name="name">Manager: All Lessons</field>
+            <field name="model_id" ref="model_elearning_lesson"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_elearning_manager'))]"/>
+        </record>
+
+        <!-- Enrollment Rules -->
+        <record id="elearning_enrollment_rule_teacher" model="ir.rule">
+            <field name="name">Teacher: Own Enrollments</field>
+            <field name="model_id" ref="model_elearning_enrollment"/>
+            <field name="domain_force">[('course_id.instructor_id', '=', user.partner_id.id)]</field>
+            <field name="groups" eval="[(4, ref('group_elearning_teacher'))]"/>
+        </record>
+        
+        <record id="elearning_enrollment_rule_manager" model="ir.rule">
+            <field name="name">Manager: All Enrollments</field>
+            <field name="model_id" ref="model_elearning_enrollment"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_elearning_manager'))]"/>
+        </record>
+
+        <!-- Certificate Rules -->
+        <record id="elearning_certificate_rule_teacher" model="ir.rule">
+            <field name="name">Teacher: Own Certificates</field>
+            <field name="model_id" ref="model_elearning_certificate"/>
+            <field name="domain_force">[('course_id.instructor_id', '=', user.partner_id.id)]</field>
+            <field name="groups" eval="[(4, ref('group_elearning_teacher'))]"/>
+        </record>
+        
+        <record id="elearning_certificate_rule_manager" model="ir.rule">
+            <field name="name">Manager: All Certificates</field>
+            <field name="model_id" ref="model_elearning_certificate"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_elearning_manager'))]"/>
+        </record>
+
+        <!-- Submission Rules -->
+        <record id="elearning_submission_rule_teacher" model="ir.rule">
+            <field name="name">Teacher: Own Submissions</field>
+            <field name="model_id" ref="model_elearning_submission"/>
+            <field name="domain_force">[('lesson_id.course_id.instructor_id', '=', user.partner_id.id)]</field>
+            <field name="groups" eval="[(4, ref('group_elearning_teacher'))]"/>
+        </record>
+        
+        <record id="elearning_submission_rule_manager" model="ir.rule">
+            <field name="name">Manager: All Submissions</field>
+            <field name="model_id" ref="model_elearning_submission"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_elearning_manager'))]"/>
+        </record>
+
+    </data>
+</odoo>

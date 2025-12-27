@@ -1,14 +1,19 @@
 id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
 access_elearning_category_user,Category User Access,model_elearning_category,base.group_user,1,0,0,0
-access_elearning_category_manager,Category Manager Access,model_elearning_category,base.group_system,1,1,1,1
+access_elearning_category_teacher,Category Teacher Access,model_elearning_category,group_elearning_teacher,1,0,0,0
+access_elearning_category_manager,Category Manager Access,model_elearning_category,group_elearning_manager,1,1,1,1
 access_elearning_course_user,Course User Access,model_elearning_course,base.group_user,1,0,0,0
-access_elearning_course_manager,Course Manager Access,model_elearning_course,base.group_system,1,1,1,1
+access_elearning_course_teacher,Course Teacher Access,model_elearning_course,group_elearning_teacher,1,1,1,1
+access_elearning_course_manager,Course Manager Access,model_elearning_course,group_elearning_manager,1,1,1,1
 access_elearning_lesson_user,Lesson User Access,model_elearning_lesson,base.group_user,1,0,0,0
-access_elearning_lesson_manager,Lesson Manager Access,model_elearning_lesson,base.group_system,1,1,1,1
+access_elearning_lesson_teacher,Lesson Teacher Access,model_elearning_lesson,group_elearning_teacher,1,1,1,1
+access_elearning_lesson_manager,Lesson Manager Access,model_elearning_lesson,group_elearning_manager,1,1,1,1
 access_elearning_enrollment_user,Enrollment User Access,model_elearning_enrollment,base.group_user,1,1,1,0
-access_elearning_enrollment_manager,Enrollment Manager Access,model_elearning_enrollment,base.group_system,1,1,1,1
+access_elearning_enrollment_teacher,Enrollment Teacher Access,model_elearning_enrollment,group_elearning_teacher,1,1,1,1
+access_elearning_enrollment_manager,Enrollment Manager Access,model_elearning_enrollment,group_elearning_manager,1,1,1,1
 access_elearning_certificate_user,Certificate User Access,model_elearning_certificate,base.group_user,1,0,0,0
-access_elearning_certificate_manager,Certificate Manager Access,model_elearning_certificate,base.group_system,1,1,1,1
+access_elearning_certificate_teacher,Certificate Teacher Access,model_elearning_certificate,group_elearning_teacher,1,1,1,1
+access_elearning_certificate_manager,Certificate Manager Access,model_elearning_certificate,group_elearning_manager,1,1,1,1
 access_elearning_category_public,Category Public Access,model_elearning_category,base.group_public,1,0,0,0
 access_elearning_category_portal,Category Portal Access,model_elearning_category,base.group_portal,1,0,0,0
 access_elearning_course_public,Course Public Access,model_elearning_course,base.group_public,1,0,0,0
@@ -17,18 +22,22 @@ access_elearning_lesson_public,Lesson Public Access,model_elearning_lesson,base.
 access_elearning_lesson_portal,Lesson Portal Access,model_elearning_lesson,base.group_portal,1,0,0,0
 access_elearning_enrollment_portal,Enrollment Portal Access,model_elearning_enrollment,base.group_portal,1,1,1,0
 access_elearning_certificate_portal,Certificate Portal Access,model_elearning_certificate,base.group_portal,1,0,0,0
-access_elearning_lesson_question_manager,Lesson Question Manager Access,model_elearning_lesson_question,base.group_system,1,1,1,1
+access_elearning_lesson_question_teacher,Lesson Question Teacher Access,model_elearning_lesson_question,group_elearning_teacher,1,1,1,1
+access_elearning_lesson_question_manager,Lesson Question Manager Access,model_elearning_lesson_question,group_elearning_manager,1,1,1,1
 access_elearning_review_public,Review Public Access,model_elearning_course_review,base.group_public,1,0,0,0
 access_elearning_review_portal,Review Portal Access,model_elearning_course_review,base.group_portal,1,1,1,0
 access_elearning_review_user,Review User Access,model_elearning_course_review,base.group_user,1,1,1,0
-access_elearning_review_manager,Review Manager Access,model_elearning_course_review,base.group_system,1,1,1,1
+access_elearning_review_teacher,Review Teacher Access,model_elearning_course_review,group_elearning_teacher,1,1,1,1
+access_elearning_review_manager,Review Manager Access,model_elearning_course_review,group_elearning_manager,1,1,1,1
 access_elearning_submission_user,Submission User Access,model_elearning_submission,base.group_user,1,1,1,0
-access_elearning_submission_manager,Submission Manager Access,model_elearning_submission,base.group_system,1,1,1,1
+access_elearning_submission_teacher,Submission Teacher Access,model_elearning_submission,group_elearning_teacher,1,1,1,1
+access_elearning_submission_manager,Submission Manager Access,model_elearning_submission,group_elearning_manager,1,1,1,1
 access_elearning_submission_portal,Submission Portal Access,model_elearning_submission,base.group_portal,1,1,1,0
 access_elearning_lesson_question_user,Lesson Question User Access,model_elearning_lesson_question,base.group_user,1,0,0,0
 access_elearning_lesson_question_public,Lesson Question Public Access,model_elearning_lesson_question,base.group_public,1,0,0,0
 access_elearning_lesson_question_portal,Lesson Question Portal Access,model_elearning_lesson_question,base.group_portal,1,0,0,0
-access_elearning_lesson_question_option_manager,Lesson Question Option Manager Access,model_elearning_lesson_question_option,base.group_system,1,1,1,1
+access_elearning_lesson_question_option_teacher,Lesson Question Option Teacher Access,model_elearning_lesson_question_option,group_elearning_teacher,1,1,1,1
+access_elearning_lesson_question_option_manager,Lesson Question Option Manager Access,model_elearning_lesson_question_option,group_elearning_manager,1,1,1,1
 access_elearning_lesson_question_option_user,Lesson Question Option User Access,model_elearning_lesson_question_option,base.group_user,1,0,0,0
 access_elearning_lesson_question_option_public,Lesson Question Option Public Access,model_elearning_lesson_question_option,base.group_public,1,0,0,0
 access_elearning_lesson_question_option_portal,Lesson Question Option Portal Access,model_elearning_lesson_question_option,base.group_portal,1,0,0,0
