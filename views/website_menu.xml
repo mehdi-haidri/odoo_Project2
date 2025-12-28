@@ -16,5 +16,13 @@
             <field name="parent_id" ref="website.main_menu"/>
             <field name="sequence">51</field>
         </record>
+
+        <!-- Website Menu Item for My Certificates -->
+        <record id="website_elearning_my_certificates_menu" model="website.menu">
+            <field name="name">My Certificates</field>
+            <field name="url">/elearning/my_certificates</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence">52</field>
+        </record>
     </data>
 </odoo>

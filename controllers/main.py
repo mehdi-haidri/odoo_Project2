@@ -85,6 +85,20 @@ class ELearningController(http.Controller):
             'max_price': max_price,
         })
 
+    @http.route('/elearning/my_certificates', type='http', auth='public', website=True)
+    def my_certificates(self, **kw):
+        """Display list of obtained certificates"""
+        if request.env.user._is_public():
+            return request.redirect('/web/login?redirect=/elearning/my_certificates')
+            
+        certificates = request.env['elearning.certificate'].sudo().search([
+            ('student_id', '=', request.env.user.partner_id.id)
+        ])
+        
+        return request.render('odoo_Project2.my_certificates_template', {
+            'certificates': certificates,
+        })
+
     @http.route('/elearning/course/<int:course_id>', type='http', auth='public', website=True)
     def course_detail(self, course_id, **kw):
         """Display course details and lessons"""
@@ -315,9 +329,12 @@ class ELearningController(http.Controller):
             'quiz_results': quiz_results
         })
 
-    @http.route('/elearning/certificate/download/<int:enrollment_id>', type='http', auth='user', website=True)
+    @http.route('/elearning/certificate/download/<int:enrollment_id>', type='http', auth='public', website=True)
     def download_certificate(self, enrollment_id, **kw):
         """Download certificate PDF"""
+        if request.env.user._is_public():
+            return request.redirect('/web/login')
+            
         enrollment = request.env['elearning.enrollment'].browse(enrollment_id)
         
         # Check authorization
@@ -343,10 +360,13 @@ class ELearningController(http.Controller):
         ]
         return request.make_response(pdf, headers=pdfhttpheaders)
 
-    @http.route('/elearning/certificate/<int:certificate_id>', type='http', auth='user', website=True)
+    @http.route('/elearning/certificate/<int:certificate_id>', type='http', auth='public', website=True)
     def view_certificate(self, certificate_id, **kw):
         """Display certificate"""
-        certificate = request.env['elearning.certificate'].browse(certificate_id)
+        if request.env.user._is_public():
+            return request.redirect('/web/login')
+            
+        certificate = request.env['elearning.certificate'].sudo().browse(certificate_id)
         
         # Check authorization
         if certificate.student_id.id != request.env.user.partner_id.id and not request.env.user.has_group('base.group_system'):
@@ -354,16 +374,4 @@ class ELearningController(http.Controller):
         
         return request.render('odoo_Project2.certificate_template', {
             'certificate': certificate,
-        })
-
-    @http.route('/elearning/my-certificates', type='http', auth='user', website=True)
-    def my_certificates(self, **kw):
-        """Display user's certificates"""
-        user_partner = request.env.user.partner_id
-        certificates = request.env['elearning.certificate'].search([
-            ('student_id', '=', user_partner.id)
-        ])
-        
-        return request.render('odoo_Project2.my_certificates_template', {
-            'certificates': certificates,
         })

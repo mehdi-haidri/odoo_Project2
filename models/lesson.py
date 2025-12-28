@@ -7,7 +7,7 @@ class Lesson(models.Model):
     _order = 'sequence, id'
 
     name = fields.Char(string='Lesson Title', required=True)
-    course_id = fields.Many2one('elearning.course', string='Course', required=True, ondelete='cascade')
+    course_id = fields.Many2one('elearning.course', string='Course', required=True, ondelete='cascade', group_expand='_group_expand_courses')
     
     description = fields.Html(string='Description')
     content = fields.Html(string='Content')
@@ -39,6 +39,10 @@ class Lesson(models.Model):
     has_quiz = fields.Boolean(string='Has Quiz')
     quiz_passing_score = fields.Integer(string='Passing Score (%)', default=70)
     question_ids = fields.One2many('elearning.lesson.question', 'lesson_id', string='Questions')
+
+    @api.model
+    def _group_expand_courses(self, courses, domain, order):
+        return self.env['elearning.course'].search([])
 
     @api.depends('video_url')
     def _compute_video_embed_url(self):

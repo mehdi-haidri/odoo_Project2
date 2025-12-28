@@ -93,7 +93,7 @@
             <field name="name">elearning.lesson.kanban</field>
             <field name="model">elearning.lesson</field>
             <field name="arch" type="xml">
-                <kanban default_group_by="course_id" class="o_kanban_small_column">
+                <kanban default_group_by="course_id" class="o_kanban_small_column" group_create="false">
                     <field name="name"/>
                     <field name="course_id"/>
                     <field name="lesson_type"/>

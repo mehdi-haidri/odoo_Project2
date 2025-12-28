@@ -674,4 +674,61 @@
             </div>
         </t>
     </template>
+
+    <template id="my_certificates_template" name="My Certificates">
+        <t t-call="website.layout">
+            <div id="elearning_certificates" class="elearning-container">
+                <div class="container">
+                    <div class="row mb-5">
+                        <div class="col-12">
+                            <h1 class="mb-3">My Certificates</h1>
+                            <p class="lead text-muted">View and download your earned certificates</p>
+                        </div>
+                    </div>
+                    
+                    <t t-if="certificates">
+                        <div class="row">
+                            <t t-foreach="certificates" t-as="certificate">
+                                <div class="col-lg-6 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <h5 class="card-title"><t t-esc="certificate.course_id.name"/></h5>
+                                                    <p class="text-muted mb-2">
+                                                        <i class="fa fa-calendar"></i> Awarded on <span t-field="certificate.issue_date" t-options='{"widget": "date"}'/>
+                                                    </p>
+                                                    <p class="text-muted mb-2">
+                                                        <i class="fa fa-hashtag"></i> <t t-esc="certificate.certificate_code"/>
+                                                    </p>
+                                                </div>
+                                                <div class="text-right">
+                                                    <span class="badge badge-success p-2">Valid</span>
+                                                </div>
+                                            </div>
+                                            <hr/>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="small text-muted">
+                                                    Instructor: <t t-esc="certificate.course_id.instructor_id.name"/>
+                                                </div>
+                                                <a t-attf-href="/report/pdf/odoo_Project2.report_certificate_document/{{ certificate.id }}" class="btn btn-primary btn-sm" target="_blank">
+                                                    <i class="fa fa-download"></i> Download PDF
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="alert alert-info">
+                            <p class="mb-0">You haven't earned any certificates yet. Complete courses to earn certificates!</p>
+                            <a href="/elearning/" class="btn btn-primary mt-3">Browse Courses</a>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
 </odoo>
