@@ -28,7 +28,7 @@ class Submission(models.Model):
         # Send submission email to instructor
         template = self.env.ref('odoo_Project2.mail_template_assignment_submitted', raise_if_not_found=False)
         if template:
-            template.send_mail(submission.id, force_send=True)
+            template.sudo().send_mail(submission.id, force_send=True)
         return submission
 
     def action_grade_submission(self):
@@ -50,4 +50,4 @@ class Submission(models.Model):
         # Send graded email to student
         template = self.env.ref('odoo_Project2.mail_template_assignment_graded', raise_if_not_found=False)
         if template:
-            template.send_mail(self.id, force_send=True)
+            template.sudo().send_mail(self.id, force_send=True)

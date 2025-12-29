@@ -31,7 +31,7 @@ class EnrollmentExtension(models.Model):
         # Send enrollment email
         template = self.env.ref('odoo_Project2.mail_template_course_enrollment', raise_if_not_found=False)
         if template:
-            template.send_mail(enrollment.id, force_send=True)
+            template.sudo().send_mail(enrollment.id, force_send=True)
         return enrollment
 
     def mark_lesson_complete(self, lesson_id):
@@ -95,4 +95,4 @@ class EnrollmentExtension(models.Model):
             # Send certificate email
             template = self.env.ref('odoo_Project2.mail_template_course_completed', raise_if_not_found=False)
             if template:
-                template.send_mail(self.id, force_send=True)
+                template.sudo().send_mail(self.id, force_send=True)
